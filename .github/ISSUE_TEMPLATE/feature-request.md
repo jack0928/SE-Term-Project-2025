@@ -1,7 +1,7 @@
 ---
 name: 기능 요청
 about: 새로운 기능 또는 작업 단위 이슈 작성
-title: "[Feat] 입력하세요"
+title: "[Feat] 제목목"
 labels: feat
 assignees: ""
 ---
