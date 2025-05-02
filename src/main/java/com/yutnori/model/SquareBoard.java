@@ -25,9 +25,7 @@ public class SquareBoard extends Board {
     protected void initializeCells() {
         cells = new ArrayList<>();
         for (int id = 0; id <= 24; id++) {
-            boolean isCentre = (id == 12);
-            boolean isCorner = (id == 0 || id == 4 || id == 20 || id == 24);
-            cells.add(new Cell(id, isCentre, isCorner));
+            cells.add(new Cell(id, isCentre(id), isCorner(id)));
         }
     }
 

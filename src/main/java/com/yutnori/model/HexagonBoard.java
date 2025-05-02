@@ -14,7 +14,10 @@ public class HexagonBoard extends Board {
     }
     @Override
     protected void initializeCells() {
-
+        cells = new ArrayList<>();
+        for (int id = 0; id <= 42; id++) {
+            cells.add(new Cell(id, isCentre(id), isCorner(id)));
+        }
     }
 
 
