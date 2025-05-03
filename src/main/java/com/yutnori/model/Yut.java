@@ -56,19 +56,11 @@ public class Yut {
         int last = getLastResult();
         return last == 4 || last == 5; // 윷(4) 또는 모(5)일 경우 true 반환
     }
-
-    // 텍스트 변환 (뷰에서 사용) , 사용할지는 모름
-    public static String getResultText(int result) {
-        return switch (result) {
-            case -1 -> "빽도";
-            case 1 -> "도";
-            case 2 -> "개";
-            case 3 -> "걸";
-            case 4 -> "윷";
-            case 5 -> "모";
-            default -> "알 수 없음";
-        };
+    //view 작성중 필요하여 추가
+    public boolean isEmpty() {
+        return results.isEmpty(); // 결과 리스트가 비어있으면 true 반환
     }
+
 
 
 
