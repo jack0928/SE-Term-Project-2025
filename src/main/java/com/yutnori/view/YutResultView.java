@@ -12,6 +12,7 @@ import java.util.Collections;
 public class YutResultView extends JPanel {
 
     private Yut currentYut;
+    private int dashIndex = -1;
 
     public void setYutResult(Yut currentYut) {
         this.currentYut = currentYut;
@@ -31,6 +32,8 @@ public class YutResultView extends JPanel {
         }
 
         List<Integer> faces = convertToFaces(result);
+        determineDashIndex(result, faces);
+
         Graphics2D g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(2));
 
@@ -40,28 +43,6 @@ public class YutResultView extends JPanel {
         int height = 80;
         int spacing = 20;
 
-        // ====== '-' 표시 위치 결정 ======
-        int dashIndex = -1;
-        List<Integer> zeroIndices = new ArrayList<>();
-        for (int i = 0; i < faces.size(); i++) {
-            if (faces.get(i) == 0) {
-                zeroIndices.add(i);
-            }
-        }
-
-        if (!zeroIndices.isEmpty()) {
-            if (result == -1) {
-                // 빽도: 반드시 하나 표시
-                dashIndex = zeroIndices.get(new Random().nextInt(zeroIndices.size()));
-            } else {
-                // 도~모: 50% 확률로 하나만 표시
-                if (new Random().nextBoolean()) {
-                    dashIndex = zeroIndices.get(new Random().nextInt(zeroIndices.size()));
-                }
-            }
-        }
-
-        // ====== 윷 4개 그리기 ======
         for (int i = 0; i < 4; i++) {
             int x = startX + i * (width + spacing);
 
@@ -73,13 +54,30 @@ public class YutResultView extends JPanel {
             if (faces.get(i) == 1) {
                 drawThreeXs(g2, x, y, width, height);
             } else if (i == dashIndex) {
-                g2.drawLine(x + 10, y + height / 2, x + width - 10, y + height / 2); // '-'
+                g2.drawLine(x + 10, y + height / 2, x + width - 10, y + height / 2);
             }
         }
 
-        // ====== 결과 텍스트 ======
         g2.setFont(new Font("맑은 고딕", Font.BOLD, 20));
         g2.drawString("결과: " + getResultText(result), startX, y + height + 40);
+    }
+
+    private void determineDashIndex(int result, List<Integer> faces) {
+        dashIndex = -1;
+        List<Integer> zeroIndices = new ArrayList<>();
+        for (int i = 0; i < faces.size(); i++) {
+            if (faces.get(i) == 0) zeroIndices.add(i);
+        }
+
+        if (!zeroIndices.isEmpty()) {
+            if (result == -1) {
+                dashIndex = zeroIndices.get(new Random().nextInt(zeroIndices.size()));
+            } else if (result == 2 || result == 3 || result == 4) {
+                if (new Random().nextBoolean()) {
+                    dashIndex = zeroIndices.get(new Random().nextInt(zeroIndices.size()));
+                }
+            }
+        }
     }
 
     private void drawThreeXs(Graphics2D g2, int x, int y, int width, int height) {
@@ -96,14 +94,20 @@ public class YutResultView extends JPanel {
 
     private List<Integer> convertToFaces(int result) {
         List<Integer> faces = new ArrayList<>(List.of(0, 0, 0, 0));
-        if (result == -1) return faces;
 
-        List<Integer> positions = List.of(0, 1, 2, 3);
-        List<Integer> shuffled = new ArrayList<>(positions);
-        Collections.shuffle(shuffled);
+        int xCount = switch (result) {
+            case -1, 1 -> 3;
+            case 2 -> 2;
+            case 3 -> 1;
+            case 5 -> 4;
+            default -> 0;
+        };
 
-        for (int i = 0; i < Math.min(result, 4); i++) {
-            faces.set(shuffled.get(i), 1); // 무작위 위치에 앞면(X)
+        List<Integer> indices = new ArrayList<>(List.of(0, 1, 2, 3));
+        Collections.shuffle(indices);
+
+        for (int i = 0; i < xCount && i < 4; i++) {
+            faces.set(indices.get(i), 1);
         }
 
         return faces;
@@ -119,21 +123,5 @@ public class YutResultView extends JPanel {
             case 5 -> "모";
             default -> "알 수 없음";
         };
-    }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("윷 결과 시각화");
-        YutResultView view = new YutResultView();
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 300);
-        frame.add(view);
-        frame.setVisible(true);
-
-
-        Yut yutFaces = new Yut();
-        yutFaces.throwSelectYut(2);
-        view.setYutResult(yutFaces);
-
     }
 }
