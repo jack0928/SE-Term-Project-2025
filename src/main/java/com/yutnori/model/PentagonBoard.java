@@ -75,12 +75,12 @@ public class PentagonBoard extends Board {
     }
 
     @Override
-    protected boolean isCorner(int id) {
+    public boolean isCorner(int id) {
         return id == 0 || id == 5 || id == 10 || id == 15 || id == 20; // corner 노드일때만 true 반환
     }
 
     @Override
-    protected boolean isCentre(int id) {
+    public boolean isCentre(int id) {
         return id == 27; // centre node 일때만 true 반환
     }
 
@@ -101,6 +101,23 @@ public class PentagonBoard extends Board {
                 new int[]{27, 28}, new int[]{28, 29}, new int[]{29, 20}, // centre - 상단 (20번) 연결 대각선
                 new int[]{10, 30}, new int[]{30, 31}, new int[]{31, 27} // centre - 우하단 (10번) 연결 대각선
         );
+    }
+
+    @Override
+    public Cell getNextCell(Cell current, int steps) {
+        if (current == null) return null;
+
+        int nextId = current.getId() + steps;
+        if (nextId >= cells.size()) {
+            nextId = cells.size() - 1; // 범위를 넘지 않도록 제한 (또는 원형이라면 0으로 loop)
+        }
+
+        for (Cell cell : cells) {
+            if (cell.getId() == nextId) {
+                return cell;
+            }
+        }
+        return null;
     }
 
 

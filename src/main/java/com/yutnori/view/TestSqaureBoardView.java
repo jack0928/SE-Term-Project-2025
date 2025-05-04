@@ -15,5 +15,6 @@ public class TestSqaureBoardView {
 
             frame.setVisible(true);
         });
+
     }
 }

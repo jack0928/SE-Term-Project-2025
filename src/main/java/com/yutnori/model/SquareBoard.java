@@ -12,12 +12,12 @@ public class SquareBoard extends Board {
         initializeInnerPath();
     }
     @Override
-    protected boolean isCorner(int id) {
+    public boolean isCorner(int id) {
         return id == 0 || id == 5 || id == 10 || id == 15; // 그림에 따라 각각 코너를 정의
     }
 
     @Override
-    protected boolean isCentre(int id) {
+    public boolean isCentre(int id) {
         return id == 22; // 그림에 따라 센터 노드를 정의
     }
 
@@ -88,6 +88,17 @@ public class SquareBoard extends Board {
                 new int[]{5, 20}, new int[]{20, 21}, new int[]{21, 22}, new int[]{22, 23}, new int[]{23, 24}, new int[]{24, 15} // 우상단 - 좌하단 대각선 (각 노드 연결)
         );
     }
+
+    @Override
+    public Cell getNextCell(Cell current, int steps) {
+        int id = current.getId() + steps;
+        if (id < 0) id = 0;
+        if (id >= cells.size()) id = cells.size() - 1;
+
+        return cells.get(id);
+    }
+
+
 
 
 }

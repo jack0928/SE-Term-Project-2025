@@ -22,12 +22,12 @@ public class HexagonBoard extends Board {
 
 
     @Override
-    protected boolean isCorner(int id) {
+    public boolean isCorner(int id) {
         return id == 0 || id == 5 || id == 10 || id == 15 || id == 20 || id == 25; // corner 노드일때만 true 반환
     }
 
     @Override
-    protected boolean isCentre(int id) {
+    public boolean isCentre(int id) {
         return id == 32; // centre 노드일때만 true 반환
     }
 
@@ -104,4 +104,22 @@ public class HexagonBoard extends Board {
                 new int[]{32, 33}, new int[]{33, 34}, new int[]{34, 25} // centre - 좌상단 (25번) 연결 대각선
         );
     }
+
+    @Override
+    public Cell getNextCell(Cell current, int steps) {
+        if (current == null) return null;
+
+        int nextId = current.getId() + steps;
+        if (nextId >= cells.size()) {
+            nextId = cells.size() - 1; // 범위를 넘지 않도록 제한 (또는 원형이라면 0으로 loop)
+        }
+
+        for (Cell cell : cells) {
+            if (cell.getId() == nextId) {
+                return cell;
+            }
+        }
+        return null;
+    }
+
 }
