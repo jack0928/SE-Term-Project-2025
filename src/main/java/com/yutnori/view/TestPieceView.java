@@ -23,7 +23,7 @@ public class TestPieceView {
             for (int i = 1; i <= 2; i++) {
                 Player player = new Player("Player " + i);  // ID는 자동 증가
                 Piece piece = new Piece(0, player);
-                piece.moveTo(pentagonBoard.getCells().get(0)); // !!! 여기서 보드 종류 설정
+                piece.moveTo(squareBoard.getCells().get(0)); // !!! 여기서 보드 종류 설정
                 player.addPiece(piece);
 
                 players.add(player);
@@ -50,18 +50,18 @@ public class TestPieceView {
                 // ✅ 보드에 올라가지 않은 경우 → 출발점에 올려놓기만 함
                 if (!currentPiece.isOnBoard()) {
                     // 무조건 시작 셀로
-                    Cell startCell = pentagonBoard.getCells().get(0); // !!! 여기서 보드 종류 설정
+                    Cell startCell = squareBoard.getCells().get(0); // !!! 여기서 보드 종류 설정
                     currentPiece.moveTo(startCell);  // 내부에서 isOnBoard=true 처리됨
-                    pentagonBoard.repaint(); // !!! 여기서 보드 종류 설정
+                    squareBoard.repaint(); // !!! 여기서 보드 종류 설정
                     return; // ❗더 이상 이동 안 하고 종료 (getNextCell 호출 안 함)
                 }
 
                 Cell current = currentPiece.getPosition();
-                Cell next = pentagonBoard.getNextCell(current, steps); // !!! 여기서 보드 종류 설정
+                Cell next = squareBoard.getNextCell(current, steps); // !!! 여기서 보드 종류 설정
                 current.removePiece(currentPiece);
                 currentPiece.moveTo(next);
 
-                pentagonBoard.repaint(); // !!! 여기서 보드 종류 설정
+                squareBoard.repaint(); // !!! 여기서 보드 종류 설정
 
 
                 // 추가 턴이 아닌 경우에만 턴 넘김

@@ -8,6 +8,10 @@ public class Cell {
     private boolean isCenter;
     private boolean isCorner;
     private List<Piece> piecesOnCell;
+    // 연결리스트처럼 Cell들을 연결하기 위함 -> 로직 최적화에 필요하다 판단, 추가
+    private Cell nextCell;
+    private Cell previousCell;
+    private Cell cornerNextCell;
 
     public Cell(int id, boolean isCenter, boolean isCorner) {
         this.id = id;
@@ -19,15 +23,18 @@ public class Cell {
     public int getId() {
         return id;
     }
-
+    /*
     public boolean isCenter() {
-        return isCenter;
+        if (id == 4 * 5 + 2) { return true; } // n*5+2 -> 가운데 id 구하는 공식. 그래서 n각형 보드의 n값 전달 필요.
+        else { return false; }
+
     }
 
     public boolean isCorner() {
-        return isCorner;
+        if ((id % 5) == 0){ return true; }
+        else return false;
     }
-
+*/
     public void addPiece(Piece piece) {
         piecesOnCell.add(piece);
     }

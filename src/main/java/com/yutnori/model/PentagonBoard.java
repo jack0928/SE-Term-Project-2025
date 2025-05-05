@@ -1,11 +1,23 @@
 package com.yutnori.model;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class PentagonBoard extends Board {
+    private static final int[] CORNERS = {0, 5, 10, 15, 20};    // 사각 윷판의 코너 ID
+    private static final int CENTRE = 27;                   // 코드 가독성을 위한 리팩토링
 
+    private static final Map<Integer,Integer> CORNER_BRANCH;
+    static {
+        Map<Integer,Integer> m = new HashMap<>();
+        m.put( 5,  25);  // 5 -> 20
+        m.put(10,  30);  // 10 -> 25
+        m.put(15,  32);  // 22 -> 27
+        m.put(20,  29);  // 코너별 다음 경로, 중앙에서 다음 경로 저장.
+        m.put(27,  34);
+        CORNER_BRANCH = Collections.unmodifiableMap(m);
+    }
 
     public PentagonBoard() {
         initializeCells();
@@ -21,6 +33,12 @@ public class PentagonBoard extends Board {
             cells.add(new Cell(id, isCentre(id), isCorner(id)));
         }
     }
+
+    @Override
+    public boolean isCorner(int id) { return IntStream.of(CORNERS).anyMatch(c -> c == id); }
+
+    @Override
+    public boolean isCentre(int id) { return id == CENTRE; }
 
     @Override
     protected void initializeNodePositions() {
@@ -75,16 +93,6 @@ public class PentagonBoard extends Board {
     }
 
     @Override
-    public boolean isCorner(int id) {
-        return id == 0 || id == 5 || id == 10 || id == 15 || id == 20; // corner 노드일때만 true 반환
-    }
-
-    @Override
-    public boolean isCentre(int id) {
-        return id == 27; // centre node 일때만 true 반환
-    }
-
-    @Override
     protected void initializeOuterPath() {
         outerPath = new ArrayList<>();
         for (int i = 0; i < 24; i++) {
@@ -105,19 +113,21 @@ public class PentagonBoard extends Board {
 
     @Override
     public Cell getNextCell(Cell current, int steps) {
-        if (current == null) return null;
+        // 1. 기본 이동
+        int id = (current == null ? 0 : current.getId() + steps);
+        if (id < 0) id = 0;
+        if (id >= cells.size()) id = cells.size() - 1;
 
-        int nextId = current.getId() + steps;
-        if (nextId >= cells.size()) {
-            nextId = cells.size() - 1; // 범위를 넘지 않도록 제한 (또는 원형이라면 0으로 loop)
-        }
-
-        for (Cell cell : cells) {
-            if (cell.getId() == nextId) {
-                return cell;
+        // 2. “딱 코너에 착지했다면” 안쪽으로 이동
+        if (isCorner(id)) {
+            Integer branchId = CORNER_BRANCH.get(id);
+            if (branchId != null) {
+                return cells.get(branchId);
             }
         }
-        return null;
+
+        // 3,  그 외는 그대로
+        return cells.get(id);
     }
 
 
