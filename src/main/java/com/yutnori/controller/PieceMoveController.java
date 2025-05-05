@@ -15,6 +15,7 @@ public class PieceMoveController {
         return player.getActivePieces().stream().findFirst().orElse(null); // 단순 선택
     }
 
+    //이거랑 Piece의 movePiece랑은 차이가 무엇인가?
     public void movePiece(Piece piece, int steps) {
         Cell current = piece.getPosition();
         Cell next = board.getNextCell(current, steps);

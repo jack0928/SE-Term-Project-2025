@@ -1,10 +1,24 @@
 package com.yutnori.model;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class HexagonBoard extends Board {
+    private static final int[] CORNERS = {0, 5, 10, 15, 20, 25};    // 사각 윷판의 코너 ID
+    private static final int CENTRE = 32;                   // 코드 가독성을 위한 리팩토링
+
+    private static final Map<Integer,Integer> CORNER_BRANCH;
+    static {
+        Map<Integer,Integer> m = new HashMap<>();
+        m.put( 5,  30);  // 5 -> 20
+        m.put(10,  35);  // 10 -> 25
+        m.put(15,  39);  // 22 -> 27
+        m.put(20,  38);  // 코너별 다음 경로, 중앙에서 다음 경로 저장.
+        m.put(25,  34);
+        m.put(32,  41);
+        CORNER_BRANCH = Collections.unmodifiableMap(m);
+    }
 
     public HexagonBoard() {
         initializeCells();
@@ -23,12 +37,13 @@ public class HexagonBoard extends Board {
 
     @Override
     public boolean isCorner(int id) {
-        return id == 0 || id == 5 || id == 10 || id == 15 || id == 20 || id == 25; // corner 노드일때만 true 반환
+        return IntStream.of(CORNERS)
+                .anyMatch(c -> c == id); // corner 노드일때만 true 반환
     }
 
     @Override
     public boolean isCentre(int id) {
-        return id == 32; // centre 노드일때만 true 반환
+        return id == CENTRE; // centre 노드일때만 true 반환
     }
 
     @Override
@@ -107,19 +122,21 @@ public class HexagonBoard extends Board {
 
     @Override
     public Cell getNextCell(Cell current, int steps) {
-        if (current == null) return null;
+        // 1. 기본 이동
+        int id = (current == null ? 0 : current.getId() + steps);
+        if (id < 0) id = 0;
+        if (id >= cells.size()) id = cells.size() - 1;
 
-        int nextId = current.getId() + steps;
-        if (nextId >= cells.size()) {
-            nextId = cells.size() - 1; // 범위를 넘지 않도록 제한 (또는 원형이라면 0으로 loop)
-        }
-
-        for (Cell cell : cells) {
-            if (cell.getId() == nextId) {
-                return cell;
+        // 2. “딱 코너에 착지했다면” 안쪽으로 이동
+        if (isCorner(id)) {
+            Integer branchId = CORNER_BRANCH.get(id);
+            if (branchId != null) {
+                return cells.get(branchId);
             }
         }
-        return null;
+
+        // 3,  그 외는 그대로
+        return cells.get(id);
     }
 
 }

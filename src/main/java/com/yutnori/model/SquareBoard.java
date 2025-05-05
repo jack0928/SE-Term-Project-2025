@@ -2,24 +2,27 @@ package com.yutnori.model;
 
 import java.awt.*;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class SquareBoard extends Board {
+    private static final int[] CORNERS = {0, 5, 10, 15};    // 사각 윷판의 코너 ID
+    private static final int CENTRE = 22;                   // 코드 가독성을 위한 리팩토링
 
+    private static final Map<Integer,Integer> CORNER_BRANCH;
+    static {
+        Map<Integer,Integer> m = new HashMap<>();
+        m.put( 5,  20);  // 5 -> 20
+        m.put(10,  25);  // 10 -> 25
+        m.put(22,  27);  // 22 -> 27
+        CORNER_BRANCH = Collections.unmodifiableMap(m);
+    }
     public SquareBoard() {
         initializeCells();
         initializeNodePositions();
         initializeOuterPath();
         initializeInnerPath();
     }
-    @Override
-    public boolean isCorner(int id) {
-        return id == 0 || id == 5 || id == 10 || id == 15; // 그림에 따라 각각 코너를 정의
-    }
 
-    @Override
-    public boolean isCentre(int id) {
-        return id == 22; // 그림에 따라 센터 노드를 정의
-    }
 
     @Override
     protected void initializeCells() {
@@ -28,6 +31,11 @@ public class SquareBoard extends Board {
             cells.add(new Cell(id, isCentre(id), isCorner(id)));
         }
     }
+    @Override
+    public boolean isCorner(int id) { return IntStream.of(CORNERS).anyMatch(c -> c == id); }
+
+    @Override
+    public boolean isCentre(int id) { return id == CENTRE; }
 
     @Override
     protected void initializeNodePositions() {
@@ -81,6 +89,7 @@ public class SquareBoard extends Board {
         outerPath.add(new int[]{19, 0}); // 마지막 -> 첫 노드 연결
     }
 
+    //이런게 링크드리스트 꼴로 연결되어야 할 거 같은데 이 array들로 다음 path를 어떻게 찾을 건지 잘 모르겠음
     @Override
     protected void initializeInnerPath() {
         innerPath = Arrays.asList(
@@ -91,10 +100,20 @@ public class SquareBoard extends Board {
 
     @Override
     public Cell getNextCell(Cell current, int steps) {
-        int id = current.getId() + steps;
+        // 1. 기본 이동
+        int id = (current == null ? 0 : current.getId() + steps);
         if (id < 0) id = 0;
         if (id >= cells.size()) id = cells.size() - 1;
 
+        // 2. “딱 코너에 착지했다면” 안쪽으로 이동
+        if (isCorner(id)) {
+            Integer branchId = CORNER_BRANCH.get(id);
+            if (branchId != null) {
+                return cells.get(branchId);
+            }
+        }
+
+        // 3,  그 외는 그대로
         return cells.get(id);
     }
 

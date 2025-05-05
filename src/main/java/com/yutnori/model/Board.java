@@ -6,12 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 public abstract class Board extends JPanel {
     protected List<Cell> cells;
-
-
-
 
     protected abstract void initializeCells();
 
@@ -26,9 +24,10 @@ public abstract class Board extends JPanel {
     public Point getNodePosition(int id) {
         return nodePositions.get(id);
     } // 노드의 위치를 가져오는 getter method
-
+    //이거
     protected List<int[]> outerPath = new ArrayList<>(); // outerPath: 노드들 간의 연결을 저장하는 리스트 (각 연결은 int[]로 표현됨)
     protected List<int[]> innerPath = new ArrayList<>(); // innerPath: 노드들 간의 연결을 저장하는 리스트 (각 연결은 int[]로 표현됨)
+
 
     protected static final int RADIUS = 40; // 일반 노드의 반지름 (flexible)
     protected static final int CORNER_RADIUS = 60; // 코너 및 센터 노드의 반지름 (flexible)
