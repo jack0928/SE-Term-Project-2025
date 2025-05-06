@@ -113,7 +113,7 @@ public class YutResultView extends JPanel {
         return faces;
     }
 
-    private String getResultText(int result) {
+    public static String getResultText(int result) {
         return switch (result) {
             case -1 -> "빽도";
             case 1 -> "도";

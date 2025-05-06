@@ -7,6 +7,7 @@ import com.yutnori.model.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.util.Map;
 
 public class BoardView extends JPanel{
@@ -16,38 +17,81 @@ public class BoardView extends JPanel{
         setPreferredSize(new Dimension(800, 800)); // required for layout!
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    // 노드의 위치를 그리는 function
+    protected void drawNodes(Graphics g) {
+        for (Map.Entry<Integer, Point> entry : board.getNodePositions().entrySet()) {
+            int id = entry.getKey();
+            Point p = entry.getValue();
 
+            boolean corner = board.isCorner(id);
+            boolean centre = board.isCentre(id);
+            int radius = corner || centre? Board.getCornerRadius() : Board.getRadius();
+
+            g.setColor(Color.WHITE);
+            g.fillOval(p.x - radius / 2, p.y - radius / 2, radius, radius);
+            g.setColor(Color.BLACK);
+            g.drawOval(p.x - radius / 2, p.y - radius / 2, radius, radius);
+
+            if (corner || centre) {
+                g.drawOval(p.x - radius / 2 + 3, p.y - radius / 2 + 3, radius - 6, radius - 6);
+            }
+
+            if (id == 0) {
+                FontMetrics fm = g.getFontMetrics();
+                int textWidth = fm.stringWidth("출발");
+                int textHeight = fm.getAscent();
+                g.drawString("출발", p.x - textWidth / 2, p.y + textHeight / 2); // locating "출발" text in the centre of the starting node
+            }
+            else { // TODO: 노드 ID를 그리는 부분임. 알고리즘 다 짜고 나서 주석 해제 필수!
+                FontMetrics fm = g.getFontMetrics();
+                String label = String.valueOf(id);
+                int textWidth = fm.stringWidth(label);
+                int textHeight = fm.getAscent();
+                g.drawString(label, p.x - textWidth / 2, p.y + textHeight / 2);
+            }
+        }
+    }
+
+    // 노드 간의 연결을 그리는 function
+    protected void drawLines(Graphics g) {
+        g.setColor(Color.BLACK);
+
+        java.util.List<int[]>[] allPaths = new java.util.List[]{board.getOuterPath(), board.getInnerPath()}; // outerPath, innerPath를 따로 for loop를 사용하지 않고 같이 그리기 위해 allPaths 배열로 묶음
+        for (List<int[]> path : allPaths) {
+            for (int[] pair : path) {
+                Point p1 = board.getNodePositions().get(pair[0]);
+                Point p2 = board.getNodePositions().get(pair[1]);
+                if (p1 != null && p2 != null) {
+                    g.drawLine(p1.x, p1.y, p2.x, p2.y);
+                }
+            }
+        }
+    }
+
+    protected void drawPieces(Graphics g) {
         for (Cell cell : board.getCells()) {
             Point pos = board.getNodePosition(cell.getId());
             if (pos == null) continue;
 
-            // ✅ 코너 셀: double circle
-            if (board.isCorner(cell.getId())) {
-                g.setColor(Color.BLACK);
-                g.drawOval(pos.x - 20, pos.y - 20, 40, 40); // 바깥 원
-            }
-
-            // ✅ 일반 셀
-            g.setColor(Color.BLACK);
-            g.drawOval(pos.x - 15, pos.y - 15, 30, 30);
-
-            // ✅ 센터 or 출발 텍스트
-            if (board.isCentre(cell.getId()) || cell.getId() == 0) {
-                g.setColor(Color.BLACK);
-                g.drawString("출발", pos.x - 15, pos.y - 20);
-            }
-
-            // ✅ 말 그리기
             int offset = 0;
             for (Piece piece : cell.getStackedPieces()) {
+                if (!piece.isOnBoard()) continue; // 보드에 올라가 있지 않은 말은 그리지 않음
+
                 g.setColor(piece.getColor());
                 g.fillOval(pos.x - 10 + offset, pos.y - 10, 20, 20);
                 offset += 5;
             }
         }
+    }
+
+    // 그리는 function을 override하여 JPanel의 기본 그리기 기능을 사용함.
+    // 위치 조정은 하위 class에서 수행 (drawLines, drawNodes function 호출)
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        drawLines(g);
+        drawNodes(g);
+        drawPieces(g);
     }
 
 

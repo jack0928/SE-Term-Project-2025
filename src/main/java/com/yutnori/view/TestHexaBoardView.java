@@ -1,7 +1,7 @@
 package com.yutnori.view;
 
 import com.yutnori.model.HexagonBoard;
-import com.yutnori.model.PentagonBoard;
+import com.yutnori.model.SquareBoard;
 
 import javax.swing.*;
 
@@ -12,7 +12,10 @@ public class TestHexaBoardView {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 800);
 
-            frame.add(new HexagonBoard());
+            HexagonBoard board = new HexagonBoard();     // ✅ 모델 생성
+            BoardView boardView = new BoardView(board); // ✅ 뷰 생성
+
+            frame.add(boardView);                      // ✅ 뷰를 추가
 
             frame.setVisible(true);
         });

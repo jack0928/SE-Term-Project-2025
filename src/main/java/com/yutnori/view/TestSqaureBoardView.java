@@ -11,10 +11,12 @@ public class TestSqaureBoardView {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(750, 750);
 
-            frame.add(new SquareBoard());
+            SquareBoard board = new SquareBoard();     // create model
+            BoardView boardView = new BoardView(board); // create view
+
+            frame.add(boardView);                      // add view
 
             frame.setVisible(true);
         });
-
     }
 }

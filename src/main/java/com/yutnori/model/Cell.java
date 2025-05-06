@@ -23,7 +23,7 @@ public class Cell {
     public int getId() {
         return id;
     }
-    /*
+    /* // isCentre와 isCorner는 Board에서 있는 것을 사용하여 주기 바람. 사용 예시: board.isCorner(id);
     public boolean isCenter() {
         if (id == 4 * 5 + 2) { return true; } // n*5+2 -> 가운데 id 구하는 공식. 그래서 n각형 보드의 n값 전달 필요.
         else { return false; }
@@ -46,4 +46,6 @@ public class Cell {
     public List<Piece> getStackedPieces() {
         return piecesOnCell;
     }
+
+
 }
