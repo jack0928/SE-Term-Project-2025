@@ -27,7 +27,7 @@ public class SquareBoard extends Board {
     @Override
     protected void initializeCells() {
         cells = new ArrayList<>();
-        for (int id = 0; id <= 24; id++) {
+        for (int id = 0; id <= 28; id++) {
             cells.add(new Cell(id, isCentre(id), isCorner(id)));
         }
     }
@@ -77,7 +77,7 @@ public class SquareBoard extends Board {
                 {15, 23, 24},  // 감소
         };
 
-        generateDiagonalNodes(centreX, centreY, cornerInnerNodeId); // 대각선 노드들의 위치를 정의하는 함수 호출
+        generateInnerNodes(centreX, centreY, cornerInnerNodeId); // 대각선 노드들의 위치를 정의하는 함수 호출
 
     }
 

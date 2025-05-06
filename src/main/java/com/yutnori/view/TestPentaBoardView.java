@@ -11,7 +11,10 @@ public class TestPentaBoardView {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 800);
 
-            frame.add(new PentagonBoard());
+            PentagonBoard board = new PentagonBoard();     // ✅ 모델 생성
+            BoardView boardView = new BoardView(board); // ✅ 뷰 생성
+
+            frame.add(boardView);                      // ✅ 뷰를 추가
 
             frame.setVisible(true);
         });

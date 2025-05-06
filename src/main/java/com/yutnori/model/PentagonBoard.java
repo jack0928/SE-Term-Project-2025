@@ -88,7 +88,7 @@ public class PentagonBoard extends Board {
                 {20, 28, 29}   // 증가
         };
 
-        generateDiagonalNodes(centreX, centreY, cornerInnerNodeId); // 대각선 노드들의 위치를 정의하는 함수 호출
+        generateInnerNodes(centreX, centreY, cornerInnerNodeId); // 대각선 노드들의 위치를 정의하는 함수 호출
 
     }
 
