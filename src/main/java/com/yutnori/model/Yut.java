@@ -7,11 +7,6 @@ public class Yut {
 
     private final List<Integer> results = new ArrayList<>(); // 윷 결과값
 
-    private static final Random random = new Random();
-
-    // 윷 결과 pool: 빽도(-1), 도(1), 개(2), 걸(3), 윷(4), 모(5)
-    private static final int[] YUT_POOL = {-1, 1, 2, 3, 4, 5};
-
     // 윷 결과 반환
     public List<Integer> getResults() {
         return results;
@@ -26,8 +21,15 @@ public class Yut {
     }
     // 게임용: 무작위로 윷을 던짐
     public void throwRandomYut() {
-        int rand = YUT_POOL[random.nextInt(YUT_POOL.length)];
-        results.add(rand);
+        double r = Math.random();  // 0.0 ~ 1.0
+        int result;
+        if (r < 1.0 / 16) result = -1;         // 빽도
+        else if (r < 4.0 / 16) result = 1;     // 도
+        else if (r < 10.0 / 16) result = 2;    // 개
+        else if (r < 14.0 / 16) result = 3;    // 걸
+        else if (r < 15.0 / 16) result = 4;    // 윷
+        else result = 5;                       // 모
+        results.add(result);
     }
 
     // 가장 마지막 결과만 반환
