@@ -56,20 +56,31 @@ public class Piece {
     }
 
 
-//    public void finish() { // 끝맺음을 위한 메소드. 현재 미완성 및 사용처 없음. 알고리즘 구성 시 추가로 implement하여 사용 바람.
-//        position = null;
-//        isFinished = true;
-//        isOnBoard = false;
-//    }
+    public void finish() {
+        // 현재 위치에서 제거
+        if (position != null) {
+            position.removePiece(this);
+        }
 
-//    public void reset() { // game reset을 위한 메소드. 현재 미완성 및 사용처 없음. 알고리즘 구성 시 추가로 implement하여 사용 바람.
-//        if (position != null) {
-//            position.removePiece(this);
-//        }
-//        position = null;
-//        distance = 0;
-//        moveTogetherPiece.clear();
-//    }
+        position = null;
+        isFinished = true;
+        isOnBoard = false;
+        moveTogetherPiece.clear(); // 업힌 말 초기화
+    }
+
+    public void reset() {
+        // 보드 상 위치 제거
+        if (position != null) {
+            position.removePiece(this);
+        }
+
+        position = null;
+        isOnBoard = false;
+        isFinished = false;
+        distance = 0;
+        moveTogetherPiece.clear(); // 업힌 말 초기화
+    }
+
 
     public Cell getPosition() { // to get the position of the piece
         return position;
@@ -98,4 +109,20 @@ public class Piece {
     }
 
     // public void setOnBoard(boolean onBoard) { isOnBoard = onBoard; } // setter method. 현재 사용처 없음. 추후 필요시 사용 바람.
+
+    public void addGroupingPiece(Piece p) { // 업기 기능을 위한 메소드. 현재 사용처 없음. 추후 필요시 사용 바람.
+        moveTogetherPiece.add(p);
+    }
+
+    public List<Piece> getGroupingPieces() { // grouping 이후에 업힌 말들을 가져오는 메소드. 현재 사용처 없음. 추후 필요시 사용 바람.
+        return moveTogetherPiece;
+    }
+
+    public int getGroupingPieceCount() { // grouping 이후, 업힌 말의 갯수를 가져옴
+        return moveTogetherPiece.size();
+    }
+
+    public boolean isFinished() {
+        return isFinished;
+    }
 }
