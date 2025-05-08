@@ -16,9 +16,23 @@ public class SquareBoard extends Board {
         for (int i = 0; i < 19; i++) {
             m.put(i,(i+1)%19);
         }
-        m.put(20,21); m.put(21,22); m.put(22,23); m.put(23,24);
+        m.put(20,21); m.put(21,22); m.put(22,23); m.put(23,24); m.put(24,15);
         m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0);
         nextPositionGeneral = Collections.unmodifiableMap(m);
+    }
+    private static final Map<Integer, Integer> nextPositionSpecial;
+    static {
+        Map<Integer,Integer> m = new HashMap<>();
+        for (int i = 0; i < 19; i++) {
+            if (i == 5) {m.put(5,20); continue; }
+            if (i == 10) {m.put(10,25); continue;}
+            m.put(i,(i+1));
+        }
+
+        m.put(20,21); m.put(21,22); m.put(22,28); m.put(23,24); m.put(24,15);
+        m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0);
+
+        nextPositionSpecial = Collections.unmodifiableMap(m);
     }
     public SquareBoard() {
         initializeCells();
@@ -69,6 +83,7 @@ public class SquareBoard extends Board {
 
 
         nodePositions.put(22, new Point(centreX, centreY)); // center node (센터 노드)
+        nodePositions.put(27, new Point(centreX, centreY));
 
 
         // 대각선 노드들의 위치 정의.
@@ -106,61 +121,18 @@ public class SquareBoard extends Board {
     }
 
     @Override
-    public Cell getDestinationCell(Cell current, int steps) {
+    public Cell getDestinationCell(Cell current, int steps, Board board, Piece piece) {
         if (current == null) return cells.get(0);
         Cell destCell = current;
-        /*
-        빽도가 아니면 현재 위치가 분기를 만드는 셀인지 확인 후,
-        맞다면 안쪽 브랜치(지름길)로 이동 후 다음 셀로 한 칸 씩 이동 -> getNextBranchCell -> getNextCell * (steps -1) 실행
-        아니라면 그냥 다음 셀로 한 칸 씩 이동 -> getNextCell * step 실행
-        이러면 왼쪽 위, 즉 10, 25, 26에서 이동할 때 NextCell로 이동하다보면 오류 발생
-        25에서 걸이 나오면 NextCell만 실행하는데, 이러면 25->26->22->23과 같은 형태가 됨.
-        왜냐하면 22, 중앙의 ne
-        */
-        /*
-        if (steps > 0){
-            if (isBranchCorner(current.getId())) {
-                destCell = this.cells.get(destCell.getId()).getNextBranchCell();
-                for (int i = 0; i < steps - 1; i++) {
-                    destCell = this.cells.get(destCell.getId()).getNextCell();
-                }
-            }
-            else{
-                for (int i = 0; i < steps; i++) {
-                    destCell = this.cells.get(destCell.getId()).getNextCell();
-                }
-            }
-        }
-        else {
-            destCell = this.cells.get(destCell.getId()).getPreviousCell();
+
+        for (int i = 0; i < steps; i++){
+            piece.history.push(destCell.getId());
+            System.out.println("history : " + piece.history);
+            if (i==0) destCell =  board.getCells().get(nextPositionSpecial.get(destCell.getId()));
+            else destCell =  board.getCells().get(nextPositionGeneral.get(destCell.getId()));
         }
 
 
-         */
-
-
-
-        // 1. 기본 이동
-        /*
-        int id = (current == null ? 0 : current.getId() + steps);
-        if (id < 0) id = 0;
-        if (id >= cells.size()) id = cells.size() - 1;
-
-         */
-        // 2. “딱 코너에 착지했다면” 안쪽으로 이동
-        /*
-        if (isCorner(id)) {
-            Integer branchId = CORNER_BRANCH.get(id);
-            if (branchId != null) {
-                return cells.get(branchId);
-            }
-        }
-*/
-
-
-
-
-        // 3,  그 외는 그대로
         return destCell;
     }
 

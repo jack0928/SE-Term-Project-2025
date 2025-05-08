@@ -112,7 +112,7 @@ public class PentagonBoard extends Board {
     }
 
     @Override
-    public Cell getDestinationCell(Cell current, int steps) {
+    public Cell getDestinationCell(Cell current, int steps, Board board, Piece piece) {
         // 1. 기본 이동
         int id = (current == null ? 0 : current.getId() + steps);
         if (id < 0) id = 0;

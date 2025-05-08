@@ -23,12 +23,15 @@ public class Yut {
     public void throwRandomYut() {
         double r = Math.random();  // 0.0 ~ 1.0
         int result;
+
+
         if (r < 1.0 / 16) result = -1;         // 빽도
         else if (r < 4.0 / 16) result = 1;     // 도
         else if (r < 10.0 / 16) result = 2;    // 개
         else if (r < 14.0 / 16) result = 3;    // 걸
-        else if (r < 15.0 / 16) result = 4;    // 윷
+        else if (r < 15.0/ 16) result = 4;    // 윷
         else result = 5;                       // 모
+        
         results.add(result);
     }
 
