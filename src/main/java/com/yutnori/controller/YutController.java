@@ -9,23 +9,36 @@ public class YutController {
     private final Yut yut;
     private final YutResultView view;
 
+    // Constructor
     public YutController(Yut yut, YutResultView view) {
         this.yut = yut;
         this.view = view;
-        // 랜덤 윷 던지기 버튼 이벤트
-        view.getThrowRandomButton().addActionListener(e -> {
-            yut.throwRandomYut();
-            view.setYutResult(yut);
-        });
-        // 선택 윷 던지기 버튼 이벤트
-        view.getSelectYutButton().addActionListener(e -> {
-            try {
+        initEventHandlers();
+    }
+
+    // Method: 버튼 이벤트 설정
+    private void initEventHandlers() {
+        view.getThrowRandomButton().addActionListener(e -> performThrow(true));
+        view.getSelectYutButton().addActionListener(e -> performThrow(false));
+    }
+
+    // Method: 윷 던지기 수행
+    public void performThrow(boolean isRandom) {
+        try {
+            if (isRandom) {
+                yut.throwRandomYut();
+            } else {
                 int selectedResult = view.getSelectedYutValue();
                 yut.throwSelectYut(selectedResult);
-                view.setYutResult(yut);
-            } catch (IllegalArgumentException ex) {
-                System.err.println("선택 오류: " + ex.getMessage());
             }
-        });
+            updateView();
+        } catch (IllegalArgumentException ex) {
+            System.err.println("선택 오류: " + ex.getMessage());
+        }
+    }
+
+    // Method: View 업데이트
+    public void updateView() {
+        view.setYutResult(yut);
     }
 }
