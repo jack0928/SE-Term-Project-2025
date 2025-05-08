@@ -22,8 +22,6 @@ public class Cell {
         this.piecesOnCell = new ArrayList<>();
     }
 
-
-
     public int getId() {
         return id;
     }
@@ -47,20 +45,6 @@ public class Cell {
     public List<Piece> getStackedPieces() {
         return piecesOnCell;
     }
-    /*
-    public Cell getNextCell() { return nextCell; }
 
-    public void setNextCell(Cell nextCell) { this.nextCell = nextCell; }
 
-    public Cell getPreviousCell() { return previousCell; }
-
-    public void setPreviousCell(Cell previousCell) { this.previousCell = previousCell; }
-
-    public Cell getNextBranchCell() { return nextBranchCell; }
-
-    public void setNextBranchCell(Cell nextBranchCell) { this.nextBranchCell = nextBranchCell; }
-     */
 }
-
-
-

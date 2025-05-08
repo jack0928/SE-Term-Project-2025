@@ -6,8 +6,8 @@ import java.util.stream.IntStream;
 
 public class SquareBoard extends Board {
     private static final int[] CORNERS = {0, 5, 10, 15};    // 사각 윷판의 코너 ID
-    private static final int CENTRE = 22;                   // 코드 가독성을 위한 리팩토링
     private static final int[] BRANCHED_CORNERS = {5, 10, 22};
+    private static final int[] CENTRE = {22, 27};                   // 코드 가독성을 위한 리팩토링
 
     private static final Map<Integer, Integer> nextPositionGeneral;
     static {
@@ -31,16 +31,15 @@ public class SquareBoard extends Board {
     @Override
     protected void initializeCells() {
         cells = new ArrayList<>();
-        for (int id = 0; id <= 28; id++) {
+        for (int id = 0; id <= 29; id++) {
             cells.add(new Cell(id, isCentre(id), isCorner(id)));
         }
     }
-
     @Override
     public boolean isCorner(int id) { return IntStream.of(CORNERS).anyMatch(c -> c == id); }
 
     @Override
-    public boolean isCentre(int id) { return id == CENTRE; }
+    public boolean isCentre(int id) { return id == CENTRE[0] || id == CENTRE[1]; }
 
     public boolean isBranchCorner(int id) { return IntStream.of(BRANCHED_CORNERS).anyMatch(c -> c == id); }
 
@@ -78,7 +77,7 @@ public class SquareBoard extends Board {
                 // 첫번째 element: 코너 노드 id
                 // 두번째 element: 센터에 가까운 노드 id
                 // 세번째 element: 코너에 가까운 노드 id
-                {0, 27, 28},   // (센터에서 기준) 증가
+                {0, 28, 29},   // (센터에서 기준) 증가
                 {5, 21, 20},   // 감소
                 {10, 26, 25},  // 감소
                 {15, 23, 24},  // 감소
@@ -101,7 +100,8 @@ public class SquareBoard extends Board {
     protected void initializeInnerPath() {
         innerPath = Arrays.asList(
                 new int[]{10, 25}, new int[]{25, 26}, new int[]{26, 22}, new int[]{22, 27}, new int[]{27, 28}, new int[]{28, 0}, // 좌상단 - 우하단 대각선 (각 노드 연결)
-                new int[]{5, 20}, new int[]{20, 21}, new int[]{21, 22}, new int[]{22, 23}, new int[]{23, 24}, new int[]{24, 15} // 우상단 - 좌하단 대각선 (각 노드 연결)
+                new int[]{5, 20}, new int[]{20, 21}, new int[]{21, 22}, new int[]{22, 23}, new int[]{23, 24}, new int[]{24, 15}, // 우상단 - 좌하단 대각선 (각 노드 연결)
+                new int[] {22, 28}
         );
     }
 

@@ -79,8 +79,20 @@ public class BoardView extends JPanel{
 
                 g.setColor(piece.getColor());
                 g.fillOval(pos.x - 10 + offset, pos.y - 10, 20, 20);
+                // 숫자 라벨 추가 (말1, 말2 labeling)
+                g.setColor(Color.BLACK);
+                g.setFont(new Font("Arial", Font.BOLD, 12));
+                String label = String.valueOf(piece.getId() + 1); // 말 번호: 1부터 시작
+                g.drawString(label, pos.x - 5 + offset, pos.y + 5);
+
                 offset += 5;
             }
+
+
+
+            // 말이 쌓여있는 경우, 쌓인 개수를 표시
+            drawCarriedCount(g, cell, pos);
+
         }
     }
 
@@ -93,7 +105,17 @@ public class BoardView extends JPanel{
         drawNodes(g);
         drawPieces(g);
     }
-
+    private void drawCarriedCount(Graphics g, Cell cell, Point pos) {
+        int count = 0;
+        for (Piece piece : cell.getStackedPieces()) {
+            count += piece.getGroupingPieceCount();
+        }
+        if (count > 0) {
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.BOLD, 12));
+            g.drawString("+" + count, pos.x + 10, pos.y - 10);
+        }
+    }
 
 
 }
