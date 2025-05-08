@@ -1,8 +1,10 @@
 package com.yutnori.model;
 
 import java.awt.*;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Deque;
 
 public class Piece {
     private int id;
@@ -12,6 +14,7 @@ public class Piece {
     private Player owner;
     private boolean isOnBoard = false;
     private boolean isFinished = false; // 한바퀴 다 돌고 온 말인지 여부를 판별하기 위한 boolean
+    private final Deque<Cell> history = new ArrayDeque<>();
 
     public Piece(int id, Player owner) {
         this.id = id;
