@@ -220,7 +220,17 @@ public class TestPieceView {
             }
 
             // === 4. 이동 실행 ===
-            new PieceMoveController(board).movePiece(selectedPiece, selectedStep);
+            PieceMoveController pmController = new PieceMoveController(board);
+            // 여기다 잡기 로직 추가턴 로직 추가함. 근데 현재 잡은 후 바로 한 번 더 던지는 건 아님.
+            // ex) 상대방 cell5에 있음 -> 모 도 나옴-> 모 이동 -> 잡고 한 번 더 던지기 이게 아니라
+            //                      -> 모 도 나옴 -> 모 이동 -> 도 이동-> 잡았으니 한 번 더
+            // 이렇게 작동함
+            pmController.movePiece(selectedPiece, selectedStep);
+            if (pmController.isCaptured){
+                currentPlayerIndex[0] = (currentPlayerIndex[0] + 1) % players.size();
+                turnLabel.setText("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
+                pmController.isCaptured = false;
+            }
             boardView.repaint();
             statusView.updatePlayers(players);
 

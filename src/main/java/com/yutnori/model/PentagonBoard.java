@@ -8,16 +8,33 @@ public class PentagonBoard extends Board {
     private static final int[] CORNERS = {0, 5, 10, 15, 20};    // 사각 윷판의 코너 ID
     private static final int CENTRE = 27;                   // 코드 가독성을 위한 리팩토링
 
-    private static final Map<Integer,Integer> CORNER_BRANCH;
+    private static final Map<Integer,Integer> nextPositionGeneral;
     static {
         Map<Integer,Integer> m = new HashMap<>();
-        m.put( 5,  25);  // 5 -> 20
-        m.put(10,  30);  // 10 -> 25
-        m.put(15,  32);  // 22 -> 27
-        m.put(20,  29);  // 코너별 다음 경로, 중앙에서 다음 경로 저장.
-        m.put(27,  34);
-        CORNER_BRANCH = Collections.unmodifiableMap(m);
+        // 바깥쪽
+        for (int i = 0; i < 24; i++) {
+            m.put(i,i+1);
+        }
+        m.put(25,26); m.put(26,27); m.put(30,31); m.put(31,27);
+        m.put(32,33); m.put(33,27); m.put(27,28); m.put(28,29);
+        m.put(29,20); m.put(34,35); m.put(35,0); m.put(24,0);
+        nextPositionGeneral = Collections.unmodifiableMap(m);
     }
+    private static final Map<Integer,Integer> nextPositionSpecial;
+    static {
+        Map<Integer,Integer> m = new HashMap<>();
+        for (int i = 0; i < 24; i++) {
+            if (i == 5) {m.put(i,25); continue; }
+            if (i == 10) {m.put(i,30); continue;}
+            if (i == 15) {m.put(i,32); continue;}
+            m.put(i,(i+1));
+        }
+        m.put(25,26); m.put(26,27); m.put(30,31); m.put(31,27);
+        m.put(32,33); m.put(33,27); m.put(27,34); m.put(28,29);
+        m.put(29,20); m.put(34,35); m.put(35,0); m.put(24,0);
+        nextPositionSpecial = Collections.unmodifiableMap(m);
+    }
+
 
     public PentagonBoard() {
         initializeCells();
@@ -113,21 +130,19 @@ public class PentagonBoard extends Board {
 
     @Override
     public Cell getDestinationCell(Cell current, int steps, Board board, Piece piece) {
-        // 1. 기본 이동
-        int id = (current == null ? 0 : current.getId() + steps);
-        if (id < 0) id = 0;
-        if (id >= cells.size()) id = cells.size() - 1;
+        if (current == null) return cells.get(0);
+        Cell destCell = current;
 
-        // 2. “딱 코너에 착지했다면” 안쪽으로 이동
-        if (isCorner(id)) {
-            Integer branchId = CORNER_BRANCH.get(id);
-            if (branchId != null) {
-                return cells.get(branchId);
-            }
+        for (int i = 0; i < steps; i++){
+            piece.history.push(destCell.getId());
+            System.out.println("history : " + piece.history);
+            if (i==0) destCell =  board.getCells().get(nextPositionSpecial.get(destCell.getId()));
+            else destCell =  board.getCells().get(nextPositionGeneral.get(destCell.getId()));
         }
 
-        // 3,  그 외는 그대로
-        return cells.get(id);
+
+        return destCell;
+
     }
 
 

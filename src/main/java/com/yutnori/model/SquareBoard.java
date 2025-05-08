@@ -14,26 +14,28 @@ public class SquareBoard extends Board {
         Map<Integer,Integer> m = new HashMap<>();
         // 바깥쪽
         for (int i = 0; i < 19; i++) {
-            m.put(i,(i+1)%19);
+            m.put(i,i+1);
         }
+        m.put(19,0);
         m.put(20,21); m.put(21,22); m.put(22,23); m.put(23,24); m.put(24,15);
-        m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0); m.put(19,0);
+        m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0);
         nextPositionGeneral = Collections.unmodifiableMap(m);
     }
     private static final Map<Integer, Integer> nextPositionSpecial;
     static {
         Map<Integer,Integer> m = new HashMap<>();
         for (int i = 0; i < 19; i++) {
-            if (i == 5) {m.put(5,20); continue; }
-            if (i == 10) {m.put(10,25); continue;}
+            if (i == 5) {m.put(i,20); continue; }
+            if (i == 10) {m.put(i,25); continue;}
             m.put(i,(i+1));
         }
-
+        m.put(19,0);
         m.put(20,21); m.put(21,22); m.put(22,28); m.put(23,24); m.put(24,15);
-        m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0); m.put(19,0);
+        m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0);
 
         nextPositionSpecial = Collections.unmodifiableMap(m);
     }
+
     public SquareBoard() {
         initializeCells();
         initializeNodePositions();
