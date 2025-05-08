@@ -1,6 +1,7 @@
 package com.yutnori.view;
 
 import com.yutnori.controller.PieceMoveController;
+import com.yutnori.controller.YutController;
 import com.yutnori.model.*;
 
 import javax.swing.*;
@@ -73,6 +74,7 @@ public class TestPieceView {
             YutResultView yutResultView = new YutResultView();
             yutResultView.setPreferredSize(new Dimension(400, 150));
             PieceMoveController mover = new PieceMoveController(board);
+            YutController yutController = new YutController(yut, yutResultView);
 
             // ===== 현재 플레이어 상태 =====
             final int[] currentPlayerIndex = {0};
@@ -80,56 +82,14 @@ public class TestPieceView {
             JLabel turnLabel = new JLabel("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
             turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-            JButton throwButton = new JButton("윷 던지기");
-            throwButton.addActionListener(e -> {
-                Player currentPlayer = players.get(currentPlayerIndex[0]);
-                yut.throwRandomYut();
-                int steps = yut.getLastResult();
-                yutResultView.setYutResult(yut);
+            yutResultView.getThrowRandomButton().addActionListener(e -> {
+                yutController.performThrow(true); // 랜덤 던지기
+                processMove(players, currentPlayerIndex, board, boardView, turnLabel, yut); // 말 이동
+            });
 
-                // 플레이어가 이동할 말을 선택
-                List<Piece> movable = new ArrayList<>();
-                for (Piece p : currentPlayer.getPieces()) {
-                    if (!p.isFinished()) {
-                        movable.add(p);
-                    }
-                }
-
-                if (movable.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "이동 가능한 말이 없습니다.");
-                } else {
-                    Piece selectedPiece;
-                    if (movable.size() == 1) {
-                        selectedPiece = movable.get(0);
-                    } else {
-                        String[] choices = new String[movable.size()];
-                        for (int i = 0; i < movable.size(); i++) {
-                            choices[i] = "말 " + (i + 1);
-                        }
-                        int selected = JOptionPane.showOptionDialog(
-                                null,
-                                "이동할 말을 선택하세요:",
-                                "말 선택",
-                                JOptionPane.DEFAULT_OPTION,
-                                JOptionPane.PLAIN_MESSAGE,
-                                null,
-                                choices,
-                                choices[0]
-                        );
-                        if (selected == JOptionPane.CLOSED_OPTION) return;
-                        selectedPiece = movable.get(selected);
-                    }
-
-                    // 이동 처리
-                    mover.movePiece(selectedPiece, steps);
-                    boardView.repaint();
-
-                    if (steps != 4 && steps != 5) {
-                        currentPlayerIndex[0] = (currentPlayerIndex[0] + 1) % players.size();
-                        turnLabel.setText("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
-                    }
-                }
-
+            yutResultView.getSelectYutButton().addActionListener(e -> {
+                yutController.performThrow(false); // 선택 던지기
+                processMove(players, currentPlayerIndex, board, boardView, turnLabel, yut); // 말 이동
             });
 
             // ===== 오른쪽 패널 구성 =====
@@ -139,8 +99,7 @@ public class TestPieceView {
             rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
             rightPanel.add(yutResultView);
             rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-            throwButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            rightPanel.add(throwButton);
+
 
 
             // ===== 전체 레이아웃 구성 =====
@@ -155,4 +114,60 @@ public class TestPieceView {
             frame.setVisible(true);
         });
     }
+
+    private static void processMove(
+            List<Player> players,
+            int[] currentPlayerIndex,
+            Board board,
+            BoardView boardView,
+            JLabel turnLabel,
+            Yut yut
+    ) {
+        Player currentPlayer = players.get(currentPlayerIndex[0]);
+        int steps = yut.getLastResult();
+
+        List<Piece> movable = new ArrayList<>();
+        for (Piece p : currentPlayer.getPieces()) {
+            if (!p.isFinished()) {
+                movable.add(p);
+            }
+        }
+
+        if (movable.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "이동 가능한 말이 없습니다.");
+        } else {
+            Piece selectedPiece;
+            boolean anyOnBoard = movable.stream().anyMatch(Piece::isOnBoard);
+            if (!anyOnBoard || movable.size() == 1) {
+                selectedPiece = movable.get(0);
+            } else {
+                String[] choices = new String[movable.size()];
+                for (int i = 0; i < movable.size(); i++) {
+                    choices[i] = "말 " + (i + 1);
+                }
+                int selected = JOptionPane.showOptionDialog(
+                        null,
+                        "이동할 말을 선택하세요:",
+                        "말 선택",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        choices,
+                        choices[0]
+                );
+                if (selected == JOptionPane.CLOSED_OPTION) return;
+                selectedPiece = movable.get(selected);
+            }
+
+            PieceMoveController mover = new PieceMoveController(board);
+            mover.movePiece(selectedPiece, steps);
+            boardView.repaint();
+
+            if (steps != 4 && steps != 5) {
+                currentPlayerIndex[0] = (currentPlayerIndex[0] + 1) % players.size();
+                turnLabel.setText("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
+            }
+        }
+    }
+
 }

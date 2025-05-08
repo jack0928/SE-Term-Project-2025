@@ -125,7 +125,7 @@ public class Piece {
     public Color getColor() { // to get the color of the piece (Player1은 자동으로 빨간색, Player2는 파란색, Player3은 노란색, Player4는 초록색)
         return switch (owner.getId()) {
             case 1 -> Color.RED;
-            case 2 -> Color.BLUE;
+            case 2 -> new Color(135, 206, 250); // 하늘색임. 파랑색은 말 위 숫자의 검은색과 너무 겹쳐서, 가독성을 위해 색을 바꿈.
             case 3 -> Color.YELLOW;
             case 4 -> Color.GREEN;
             default -> Color.GRAY;
