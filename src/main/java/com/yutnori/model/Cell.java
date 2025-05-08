@@ -7,7 +7,7 @@ public class Cell {
     private int id;
     private boolean isCenter;
     private boolean isCorner;
-    private List<Piece> piecesOnCell;
+    private List<Piece> piecesOnCell; // 해당 cell 위에 있는 말의 list. 같은 팀이면 업고 다른 팀이면 잡기 activate.
     // 연결리스트처럼 Cell들을 연결하기 위함 -> 로직 최적화에 필요하다 판단, 추가
     private Cell nextCell;
     private Cell previousCell;
