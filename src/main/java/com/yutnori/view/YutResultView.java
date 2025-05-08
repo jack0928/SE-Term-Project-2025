@@ -13,15 +13,67 @@ public class YutResultView extends JPanel {
 
     private Yut currentYut;
     private int dashIndex = -1;
+    private final JComboBox<String> selectYutDropdown = new JComboBox<>(
+            new String[]{"빽도", "도", "개", "걸", "윷", "모"});
+    private final JButton selectYutButton = new JButton("선택 윷 던지기");
+    private final JButton throwRandomButton = new JButton("랜덤 윷 던지기");
 
     public void setYutResult(Yut currentYut) {
         this.currentYut = currentYut;
         repaint();
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public YutResultView() {
+        setLayout(new BorderLayout());
+
+        // 중앙 그림 패널
+        JPanel centerPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                drawYutResult(g);
+            }
+        };
+        centerPanel.setPreferredSize(new Dimension(400, 200));
+        add(centerPanel, BorderLayout.CENTER);
+
+        // 컨트롤 패널
+        JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new FlowLayout());
+        controlPanel.add(selectYutDropdown);
+        controlPanel.add(selectYutButton);
+        controlPanel.add(throwRandomButton);
+
+        add(controlPanel, BorderLayout.SOUTH);
+    }
+
+    public JButton getSelectYutButton() {
+        return selectYutButton;
+    }
+
+    public JButton getThrowRandomButton() {
+        return throwRandomButton;
+    }
+
+    public JComboBox<String> getSelectYutDropdown() {
+        return selectYutDropdown;
+    }
+
+    // 드롭다운에서 선택된 윷 결과를 정수 값으로 반환
+    public int getSelectedYutValue() {
+        String selected = (String) selectYutDropdown.getSelectedItem();
+        return switch (selected) {
+            case "빽도" -> -1;
+            case "도" -> 1;
+            case "개" -> 2;
+            case "걸" -> 3;
+            case "윷" -> 4;
+            case "모" -> 5;
+            default -> throw new IllegalArgumentException("알 수 없는 윷 결과: " + selected);
+        };
+    }
+
+    private void drawYutResult(Graphics g) {
         if (currentYut == null || currentYut.isEmpty()) return;
 
         int result;
