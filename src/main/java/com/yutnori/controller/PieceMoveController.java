@@ -25,7 +25,7 @@ public class PieceMoveController {
         }
 
         Cell current = piece.getPosition();
-        Cell next = board.getNextCell(current, steps);
+        Cell next = board.getDestinationCell(current, steps);
         if (next != null) {
             piece.moveTo(next);
         }
