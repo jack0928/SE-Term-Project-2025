@@ -17,9 +17,9 @@ public class YutController {
     }
 
     // Method: 버튼 이벤트 설정
-    private void initEventHandlers() {
-        view.getThrowRandomButton().addActionListener(e -> performThrow(true));
-        view.getSelectYutButton().addActionListener(e -> performThrow(false));
+    private void initEventHandlers() { // 여기서 또 불러서, TestPieceView (the test code)에서 확인 결과 두 번 호출됨. 주석 처리하여 해결 완료.
+        // view.getThrowRandomButton().addActionListener(e -> performThrow(true));
+        // view.getSelectYutButton().addActionListener(e -> performThrow(false));
     }
 
     // Method: 윷 던지기 수행

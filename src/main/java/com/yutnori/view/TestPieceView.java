@@ -1,15 +1,23 @@
 package com.yutnori.view;
 
 import com.yutnori.controller.PieceMoveController;
+import com.yutnori.controller.YutController;
 import com.yutnori.model.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+
 
 public class TestPieceView {
+    private static final Queue<Integer> stepQueue = new LinkedList<>();
+    private static boolean isRollingPhase = true; // 윷 던지기 가능한 상태인지
+
     public static void main(String[] args) {
+
         SwingUtilities.invokeLater(() -> {
             // ===== 보드 선택 =====
             String[] boardOptions = {"Square", "Pentagon", "Hexagon"};
@@ -73,6 +81,10 @@ public class TestPieceView {
             YutResultView yutResultView = new YutResultView();
             yutResultView.setPreferredSize(new Dimension(400, 150));
             PieceMoveController mover = new PieceMoveController(board);
+            YutController yutController = new YutController(yut, yutResultView);
+
+            PlayerStatusView statusView = new PlayerStatusView();
+            statusView.render(players);
 
             // ===== 현재 플레이어 상태 =====
             final int[] currentPlayerIndex = {0};
@@ -80,56 +92,34 @@ public class TestPieceView {
             JLabel turnLabel = new JLabel("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
             turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-            JButton throwButton = new JButton("윷 던지기");
-            throwButton.addActionListener(e -> {
-                Player currentPlayer = players.get(currentPlayerIndex[0]);
-                yut.throwRandomYut();
-                int steps = yut.getLastResult();
-                yutResultView.setYutResult(yut);
+            yutResultView.getThrowRandomButton().addActionListener(e -> {
+                if (!isRollingPhase) return;
 
-                // 플레이어가 이동할 말을 선택
-                List<Piece> movable = new ArrayList<>();
-                for (Piece p : currentPlayer.getPieces()) {
-                    if (!p.isFinished()) {
-                        movable.add(p);
-                    }
-                }
+                yutController.performThrow(true);
+                int result = yut.getLastResult();
+                stepQueue.add(result);
 
-                if (movable.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "이동 가능한 말이 없습니다.");
+                if (result == 4 || result == 5) {
+                    JOptionPane.showMessageDialog(null, "윷/모입니다! 한 번 더 던지세요.");
                 } else {
-                    Piece selectedPiece;
-                    if (movable.size() == 1) {
-                        selectedPiece = movable.get(0);
-                    } else {
-                        String[] choices = new String[movable.size()];
-                        for (int i = 0; i < movable.size(); i++) {
-                            choices[i] = "말 " + (i + 1);
-                        }
-                        int selected = JOptionPane.showOptionDialog(
-                                null,
-                                "이동할 말을 선택하세요:",
-                                "말 선택",
-                                JOptionPane.DEFAULT_OPTION,
-                                JOptionPane.PLAIN_MESSAGE,
-                                null,
-                                choices,
-                                choices[0]
-                        );
-                        if (selected == JOptionPane.CLOSED_OPTION) return;
-                        selectedPiece = movable.get(selected);
-                    }
-
-                    // 이동 처리
-                    mover.movePiece(selectedPiece, steps);
-                    boardView.repaint();
-
-                    if (steps != 4 && steps != 5) {
-                        currentPlayerIndex[0] = (currentPlayerIndex[0] + 1) % players.size();
-                        turnLabel.setText("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
-                    }
+                    isRollingPhase = false;
+                    processNextMove(players, currentPlayerIndex, board, boardView, turnLabel, statusView);
                 }
+            });
 
+            yutResultView.getSelectYutButton().addActionListener(e -> {
+                if (!isRollingPhase) return;
+
+                yutController.performThrow(false);
+                int result = yut.getLastResult();
+                stepQueue.add(result);
+
+                if (result == 4 || result == 5) {
+                    JOptionPane.showMessageDialog(null, "윷/모입니다! 한 번 더 던지세요.");
+                } else {
+                    isRollingPhase = false;
+                    processNextMove(players, currentPlayerIndex, board, boardView, turnLabel, statusView);
+                }
             });
 
             // ===== 오른쪽 패널 구성 =====
@@ -139,8 +129,7 @@ public class TestPieceView {
             rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
             rightPanel.add(yutResultView);
             rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-            throwButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            rightPanel.add(throwButton);
+            rightPanel.add(statusView);
 
 
             // ===== 전체 레이아웃 구성 =====
@@ -155,4 +144,96 @@ public class TestPieceView {
             frame.setVisible(true);
         });
     }
+
+    private static void processNextMove(
+            List<Player> players,
+            int[] currentPlayerIndex,
+            Board board,
+            BoardView boardView,
+            JLabel turnLabel,
+            PlayerStatusView statusView
+    ) {
+
+        List<Integer> stepList = new ArrayList<>(stepQueue);
+        stepQueue.clear();
+
+        Player currentPlayer = players.get(currentPlayerIndex[0]);
+
+        while (!stepList.isEmpty()) {
+            // === 1. 이동 가능한 말 리스트 확보 ===
+            List<Piece> movable = new ArrayList<>();
+            for (Piece p : currentPlayer.getPieces()) {
+                if (!p.isFinished()) movable.add(p);
+            }
+
+            if (movable.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "이동 가능한 말이 없습니다.");
+                break;
+            }
+            int selectedStep;
+            int stepIndex = 0;
+
+            if (stepList.size() == 1) {selectedStep = stepList.get(0);}
+            else {
+                // === 2. 사용자에게 이동할 step 선택 제공 ===
+                // YutResultView에서 getResultText() 메서드를 정의하여 각 결과에 대한 텍스트를 반환하도록 함.
+                // 예: -1 -> "빽도", 1 -> "도", 2 -> "개", 3 -> "걸", 4 -> "윷", 5 -> "모"
+                String[] stepOptions = stepList.stream()
+                        .map(YutResultView::getResultText) // 👈 아래에 정의할 함수
+                        .toArray(String[]::new);
+
+                stepIndex = JOptionPane.showOptionDialog(
+                        null,
+                        "사용할 윷 결과를 선택하세요:",
+                        "Step 선택",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        stepOptions,
+                        stepOptions[0]
+                );
+                if (stepIndex == JOptionPane.CLOSED_OPTION) return;
+                selectedStep = stepList.get(stepIndex);
+            }
+            // === 3. 사용자에게 말 선택 제공 ===
+            Piece selectedPiece;
+            boolean anyOnBoard = movable.stream().anyMatch(Piece::isOnBoard);
+            if (!anyOnBoard || movable.size() == 1) {
+                selectedPiece = movable.get(0);
+            } else {
+                String[] pieceOptions = new String[movable.size()];
+                for (int i = 0; i < movable.size(); i++) {
+                    pieceOptions[i] = "말 " + (movable.get(i).getId() + 1);
+                }
+                int pieceIndex = JOptionPane.showOptionDialog(
+                        null,
+                        "이동할 말을 선택하세요 (" + selectedStep + "칸):",
+                        "말 선택",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        pieceOptions,
+                        pieceOptions[0]
+                );
+                if (pieceIndex == JOptionPane.CLOSED_OPTION) return;
+                selectedPiece = movable.get(pieceIndex);
+            }
+
+            // === 4. 이동 실행 ===
+            new PieceMoveController(board).movePiece(selectedPiece, selectedStep);
+            boardView.repaint();
+            statusView.updatePlayers(players);
+
+            stepList.remove(stepIndex);  // ✅ 선택된 step 제거
+        }
+
+        // === 5. 턴 종료 처리 ===
+        isRollingPhase = true;
+        currentPlayerIndex[0] = (currentPlayerIndex[0] + 1) % players.size();
+        turnLabel.setText("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
+
+    }
+
+
+
 }
