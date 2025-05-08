@@ -9,6 +9,7 @@ public class Piece {
     private Cell position;
     private int distance; // 말이 이동한 거리 (나중에 finish할때 사용한다고 함, 참고하여 사용 바람.)
     public List<Piece> moveTogetherPiece;
+    private Piece groupLeader = null;
     private Player owner;
     private boolean isOnBoard = false;
     private boolean isFinished = false; // 한바퀴 다 돌고 온 말인지 여부를 판별하기 위한 boolean
@@ -86,7 +87,7 @@ public class Piece {
         if (position != null) {
             position.removePiece(this);
         }
-
+        history.clear();
         position = null;
         isOnBoard = false;
         isFinished = false;
@@ -128,17 +129,39 @@ public class Piece {
     public void setOnBoard(boolean onBoard) { isOnBoard = onBoard; } // setter method for isOnBoard.
 
     public void setFinished(boolean finished) { isFinished = finished; } // setter method for isFinished.
-    public void addGroupingPiece(Piece p) { // 업기 기능을 위한 메소드. 현재 사용처 없음. 추후 필요시 사용 바람.
-        moveTogetherPiece.add(p);
+    public void addGroupingPiece(Piece piece) {
+        if (moveTogetherPiece == null) {
+            moveTogetherPiece = new ArrayList<>();
+        }
+        if (!moveTogetherPiece.contains(piece)) {
+            moveTogetherPiece.add(piece);
+            piece.addGroupingPiece(this); // 양방향 연결
+        }
+
     }
 
-    public List<Piece> getGroupingPieces() { // grouping 이후에 업힌 말들을 가져오는 메소드. 현재 사용처 없음. 추후 필요시 사용 바람.
-        return moveTogetherPiece;
+    public List<Piece> getGroupingPieces() {
+        return moveTogetherPiece != null ? moveTogetherPiece : new ArrayList<>();
     }
 
     public int getGroupingPieceCount() { // grouping 이후, 업힌 말의 갯수를 가져옴
         return moveTogetherPiece.size();
     }
+
+    // 말을 잡을 때, 기존 group 해제해야함.
+    public void resetGrouping() {
+
+        if (groupLeader != null) {
+            groupLeader.getGroupingPieces().remove(this); // 리더의 목록에서도 제거
+            groupLeader = null;
+        }
+
+        for (Piece p : moveTogetherPiece) {
+            p.setGroupLeader(null); // 내가 업고 있던 애들의 groupLeader도 초기화
+        }
+        moveTogetherPiece.clear(); // 내가 업고 있던 애들 초기화
+    }
+
 
     public boolean isFinished() {
         return isFinished;
@@ -151,4 +174,7 @@ public class Piece {
     public void setPassedStartOnce(boolean passed) {
         this.passedStartOnce = passed;
     }
+
+    public Piece getGroupLeader() { return groupLeader; }
+    public void setGroupLeader(Piece groupLeader) { this.groupLeader = groupLeader; }
 }

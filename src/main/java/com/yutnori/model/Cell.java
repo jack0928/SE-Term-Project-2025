@@ -37,11 +37,27 @@ public class Cell {
 
 
     public void addPiece(Piece piece) {
-        piecesOnCell.add(piece);
+        if (!piecesOnCell.contains(piece)) {
+            piecesOnCell.add(piece);
+        }
+        for (Piece groupedPiece : piece.getGroupingPieces()) {
+            if (!piecesOnCell.contains(groupedPiece)) {
+                piecesOnCell.add(groupedPiece);
+            }
+        }
+
     }
 
     public void removePiece(Piece piece) {
         piecesOnCell.remove(piece);
+        for (Piece groupedPiece : piece.getGroupingPieces()) {
+            if (piecesOnCell.contains(groupedPiece)) {
+                piecesOnCell.remove(groupedPiece);
+                System.out.println("Grouped Piece " + groupedPiece.getId() + " also removed from Cell " + id);
+            }
+
+        }
+
     }
 
     public List<Piece> getStackedPieces() {
