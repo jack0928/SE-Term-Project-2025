@@ -19,7 +19,7 @@ public abstract class Board {
         return cells;
     }
 
-    public abstract Cell getDestinationCell(Cell current, int steps); // Cell의 NextCell과 겹치지 않게 이름 변경
+    public abstract Cell getDestinationCell(Cell current, int steps, Board board, Piece piece); // Cell의 NextCell과 겹치지 않게 이름 변경
 
 //    public abstract boolean isValidMove(int currentId, int steps);
 

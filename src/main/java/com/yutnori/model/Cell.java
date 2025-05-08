@@ -1,7 +1,9 @@
 package com.yutnori.model;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.Stack;
 
 public class Cell {
     private int id;

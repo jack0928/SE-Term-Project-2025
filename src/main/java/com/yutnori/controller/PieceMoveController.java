@@ -17,21 +17,32 @@ public class PieceMoveController {
                 piece.moveTo(start);
 
                 // 첫 moveTo 후에도 추가로 이동
-                Cell next = board.getNextCell(start, steps);
+                Cell next = board.getDestinationCell(start, steps, board, piece);
                 if (next != null && next != start) {
                     piece.moveTo(next);
                 }
                 handleGrouping(piece);  // ✅ grouping 처리
             }
+
+
             return;
         }
-
-        Cell current = piece.getPosition();
-        Cell next = board.getDestinationCell(current, steps);
-        if (next != null) {
-            piece.moveTo(next);
-            handleGrouping(piece);  // ✅ grouping 처리
+        if (steps == -1) {
+            if(!piece.history.isEmpty()){
+                System.out.println(piece.history.peek());
+                piece.moveTo(board.getCells().get(piece.history.pop()));
+                handleGrouping(piece);
+            }
         }
+        else{
+            Cell current = piece.getPosition();
+            Cell next = board.getDestinationCell(current, steps, board, piece);
+            if (next != null) {
+                piece.moveTo(next);
+                handleGrouping(piece);  // ✅ grouping 처리
+            }
+        }
+
     }
 
     // 말 잡기 로직: 다른 플레이어 말이 있으면 잡고 원위치
