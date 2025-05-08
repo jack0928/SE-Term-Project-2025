@@ -1,6 +1,5 @@
 package com.yutnori.model;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class Board {
-    protected List<Cell> cells;
+    protected List<Cell> cells; // 그래프의 모든 노드(Cell)
+    protected Map<Integer, Point> nodePositions = new HashMap<>(); // 노드의 위치를 저장하는 맵 (key: 노드 id, value: Point 객체)
+    private static final Map<Integer, Integer> nextPositionGeneral = new HashMap<>();
+    protected static final Map<Integer, Integer> nextPositionSpecial = new HashMap<>();
 
     protected abstract void initializeCells();
 
@@ -17,11 +19,13 @@ public abstract class Board {
         return cells;
     }
 
-    public abstract Cell getNextCell(Cell current, int steps);
+    public abstract Cell getDestinationCell(Cell current, int steps); // Cell의 NextCell과 겹치지 않게 이름 변경
+
 //    public abstract boolean isValidMove(int currentId, int steps);
 
 
-    protected Map<Integer, Point> nodePositions = new HashMap<>(); // 노드의 위치를 저장하는 맵 (key: 노드 id, value: Point 객체)
+
+
 
     public Map<Integer, Point> getNodePositions() {
         return nodePositions;

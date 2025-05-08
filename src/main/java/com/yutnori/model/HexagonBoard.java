@@ -121,7 +121,7 @@ public class HexagonBoard extends Board {
     }
 
     @Override
-    public Cell getNextCell(Cell current, int steps) {
+    public Cell getDestinationCell(Cell current, int steps) {
         // 1. 기본 이동
         int id = (current == null ? 0 : current.getId() + steps);
         if (id < 0) id = 0;
