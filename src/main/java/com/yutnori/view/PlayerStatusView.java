@@ -1,9 +1,11 @@
 package com.yutnori.view;
 
+import com.yutnori.model.Piece;
 import com.yutnori.model.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,7 +31,26 @@ public class PlayerStatusView extends JPanel {
     public void updatePlayers(List<Player> players) {
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
-            playerLabels.get(i).setText(p.getName() + " - 점수: " + p.getScore());
+
+            // 완료된 말 수 + 번호들 구하기
+            List<String> finishedIds = new ArrayList<>();
+            for (Piece piece : p.getPieces()) {
+                if (piece.isFinished()) {
+                    finishedIds.add("말 " + (piece.getId() + 1));
+                }
+            }
+
+            String finishedInfo = finishedIds.isEmpty()
+                    ? "No finished pieces"
+                    : String.join(", ", finishedIds);
+
+            // 점수 표시
+            String text = String.format(
+                    "%s - 점수: %d | Finished: %s",
+                    p.getName(), p.getScore(), finishedInfo
+            );
+
+            playerLabels.get(i).setText(text);
         }
     }
 

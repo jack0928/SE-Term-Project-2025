@@ -12,6 +12,7 @@ public class Piece {
     private Player owner;
     private boolean isOnBoard = false;
     private boolean isFinished = false; // 한바퀴 다 돌고 온 말인지 여부를 판별하기 위한 boolean
+    private boolean passedStartOnce = false; // 도착지점 (출발지점) 에 도착했는지 여부를 판별하기 위한 boolean
     public Stack<Integer> history = new Stack<Integer>() {
         @Override
         public Integer push(Integer item) {
@@ -40,6 +41,10 @@ public class Piece {
         }
 
     };
+
+    public Stack<Integer> getHistory() {
+        return history;
+    }
 
     public Piece(int id, Player owner) {
         this.id = id;
@@ -94,6 +99,10 @@ public class Piece {
         return position;
     }
 
+    public void setPosition(Cell cell) { // to set the position of the piece
+        this.position = cell;
+    }
+
     public Player getOwner() { // to get the owner of the piece
         return owner;
     }
@@ -116,8 +125,9 @@ public class Piece {
         return isOnBoard;
     }
 
-    // public void setOnBoard(boolean onBoard) { isOnBoard = onBoard; } // setter method. 현재 사용처 없음. 추후 필요시 사용 바람.
+    public void setOnBoard(boolean onBoard) { isOnBoard = onBoard; } // setter method for isOnBoard.
 
+    public void setFinished(boolean finished) { isFinished = finished; } // setter method for isFinished.
     public void addGroupingPiece(Piece p) { // 업기 기능을 위한 메소드. 현재 사용처 없음. 추후 필요시 사용 바람.
         moveTogetherPiece.add(p);
     }
@@ -132,5 +142,13 @@ public class Piece {
 
     public boolean isFinished() {
         return isFinished;
+    }
+
+    public boolean hasPassedStartOnce() {
+        return passedStartOnce;
+    }
+
+    public void setPassedStartOnce(boolean passed) {
+        this.passedStartOnce = passed;
     }
 }

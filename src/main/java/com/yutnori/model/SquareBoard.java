@@ -17,7 +17,7 @@ public class SquareBoard extends Board {
             m.put(i,(i+1)%19);
         }
         m.put(20,21); m.put(21,22); m.put(22,23); m.put(23,24); m.put(24,15);
-        m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0);
+        m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0); m.put(19,0);
         nextPositionGeneral = Collections.unmodifiableMap(m);
     }
     private static final Map<Integer, Integer> nextPositionSpecial;
@@ -30,7 +30,7 @@ public class SquareBoard extends Board {
         }
 
         m.put(20,21); m.put(21,22); m.put(22,28); m.put(23,24); m.put(24,15);
-        m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0);
+        m.put(25,26); m.put(26,27); m.put(27,28); m.put(28,29); m.put(29,0); m.put(19,0);
 
         nextPositionSpecial = Collections.unmodifiableMap(m);
     }

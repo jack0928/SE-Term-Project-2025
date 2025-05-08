@@ -2,7 +2,9 @@ package com.yutnori.controller;
 
 import com.yutnori.model.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class PieceMoveController {
@@ -16,9 +18,12 @@ public class PieceMoveController {
 
     // 말 이동 로직: 목적지 Cell 계산 후 이동 + grouping 처리
     public void movePiece(Piece piece, int steps) {
-        if (!piece.isOnBoard()) {
+        if (piece.isFinished()) return;
+
+        if (!piece.isOnBoard()) { // 말이 보드에 올라와 있지 않으면 (맨 처음)
             if (steps > 0) {  // 빽도일 땐 출발하지 않음
                 Cell start = board.getCells().get(0);
+                piece.setOnBoard(true);
                 piece.moveTo(start);
 
                 // 첫 moveTo 후에도 추가로 이동
@@ -26,28 +31,36 @@ public class PieceMoveController {
                 if (next != null && next != start) {
                     piece.moveTo(next);
                 }
-                handleGrouping(piece);  // ✅ grouping 처리
+                handleGrouping(piece);  // grouping 처리
+                checkFinishCondition(piece);
             }
-
-
             return;
         }
-        if (steps == -1) {
+        if (steps == -1) { // 빽도일 때 (말이 보드에 올라와 있음)
             if(!piece.history.isEmpty()){
                 System.out.println(piece.history.peek());
                 piece.moveTo(board.getCells().get(piece.history.pop()));
-                handleGrouping(piece);
+                handleGrouping(piece); // grouping 처리
+                checkFinishCondition(piece);
             }
         }
-        else{
+        else { // Regular case (말이 보드에 올라와 있고, 빽도가 아님.)
             Cell current = piece.getPosition();
             Cell next = board.getDestinationCell(current, steps, board, piece);
             if (next != null) {
-                piece.moveTo(next);
-                handleGrouping(piece);  // ✅ grouping 처리
+                if (piece.isOnBoard() && next.getId() == 0 && piece.hasPassedStartOnce()) {
+                    finishPiece(piece);
+                } else {
+                    if (piece.isOnBoard() && piece.getPosition().getId() != 0 && next.getId() == 0) {
+                        piece.setPassedStartOnce(true); // 한 바퀴 돌았음을 기록
+                    }
+                    piece.moveTo(next);
+                    handleGrouping(piece);
+                    checkFinishCondition(piece);
+                }
+
             }
         }
-
     }
 
     // 말 잡기 로직: 다른 플레이어 말이 있으면 잡고 원위치
@@ -70,5 +83,32 @@ public class PieceMoveController {
             }
         }
     }
+
+    private void finishPiece(Piece piece) {
+        List<Piece> group = new ArrayList<>(piece.getGroupingPieces());
+        group.add(piece); // 본인 포함
+
+        for (Piece p : group) {
+            p.setFinished(true);
+            p.setOnBoard(false);
+            Cell cell = p.getPosition();
+            if (cell != null) {
+                cell.removePiece(p); // 보드에서 제거
+            }
+            p.setPosition(null);
+
+
+        }
+
+        piece.getGroupingPieces().clear(); // 업은 목록 초기화
+    }
+
+    private void checkFinishCondition(Piece piece) {
+        // 출발점에 도달했고, 한 바퀴 이상 돈 경우
+        if (piece.getPosition().getId() == 0 && piece.getHistory().size() > 1) {
+            finishPiece(piece); // 업힌 말 포함 처리
+        }
+    }
+
 
 }
