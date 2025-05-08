@@ -48,26 +48,6 @@ public class Piece {
         this.moveTogetherPiece = new ArrayList<>();
     }
 
-    // 여기서 moveTo의 역할이 뭔지 모르겠음 수정 필요.
-    // Dependency 관계 생각하면 Board Cell을 attribute로 가져가 Board에서 move를 수행해야함
-    // 지금처럼 하면 Piece에서 attribute로 Board를 갖다써야함. 이 부분 민규와 논의 필요.
-    /* public void moveTo(Cell cell) {
-        //여기도 moveTo에선 이동만. 이외 동작은 updatePosition에서 처리하게 바꿔야 함
-
-        if (this.position != null) {
-            this.position.removePiece(this);
-        }
-
-        this.position = cell;
-        this.isOnBoard = true; // 말이 이동하면 보드에 올라감
-        cell.addPiece(this);
-
-        distance++; // 기본적으로 한 칸씩 이동했다고 가정
-
-     }
-    */
-    // 위는 기존 moveTo. 사용처가 없어 주석 처리 완료. 밑의 moveTo()는 기존 updatePosition()이었으나 이 함수가 실제로 moveTo()의 원래 역할을 수행하므로 moveTo()로 개명.
-
     public void moveTo(Cell cell) {
         if (position != null) {
             position.removePiece(this);  // 이전 Cell에서 제거
@@ -122,10 +102,10 @@ public class Piece {
         return id;
     }
 
-    public Color getColor() { // to get the color of the piece (Player1은 자동으로 빨간색, Player2는 파란색, Player3은 노란색, Player4는 초록색)
+    public Color getColor() { // to get the color of the piece (Player1은 자동으로 빨간색, Player2는 하늘색, Player3은 노란색, Player4는 초록색)
         return switch (owner.getId()) {
             case 1 -> Color.RED;
-            case 2 -> new Color(135, 206, 250); // 하늘색임. 파랑색은 말 위 숫자의 검은색과 너무 겹쳐서, 가독성을 위해 색을 바꿈.
+            case 2 -> new Color(135, 206, 250); // Sky Blue Colour. 원래는 파란색이었으나, Color.BLUE 색상은 말 위 숫자의 검은색과 너무 겹쳐서, 가독성을 위해 색을 바꿈.
             case 3 -> Color.YELLOW;
             case 4 -> Color.GREEN;
             default -> Color.GRAY;

@@ -7,10 +7,17 @@ import com.yutnori.model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+
 
 public class TestPieceView {
+    private static final Queue<Integer> stepQueue = new LinkedList<>();
+    private static boolean isRollingPhase = true; // 윷 던지기 가능한 상태인지
+
     public static void main(String[] args) {
+
         SwingUtilities.invokeLater(() -> {
             // ===== 보드 선택 =====
             String[] boardOptions = {"Square", "Pentagon", "Hexagon"};
@@ -83,13 +90,33 @@ public class TestPieceView {
             turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
             yutResultView.getThrowRandomButton().addActionListener(e -> {
-                yutController.performThrow(true); // 랜덤 던지기
-                processMove(players, currentPlayerIndex, board, boardView, turnLabel, yut); // 말 이동
+                if (!isRollingPhase) return;
+
+                yutController.performThrow(true);
+                int result = yut.getLastResult();
+                stepQueue.add(result);
+
+                if (result == 4 || result == 5) {
+                    JOptionPane.showMessageDialog(null, "윷/모입니다! 한 번 더 던지세요.");
+                } else {
+                    isRollingPhase = false;
+                    processNextMove(players, currentPlayerIndex, board, boardView, turnLabel);
+                }
             });
 
             yutResultView.getSelectYutButton().addActionListener(e -> {
-                yutController.performThrow(false); // 선택 던지기
-                processMove(players, currentPlayerIndex, board, boardView, turnLabel, yut); // 말 이동
+                if (!isRollingPhase) return;
+
+                yutController.performThrow(false);
+                int result = yut.getLastResult();
+                stepQueue.add(result);
+
+                if (result == 4 || result == 5) {
+                    JOptionPane.showMessageDialog(null, "윷/모입니다! 한 번 더 던지세요.");
+                } else {
+                    isRollingPhase = false;
+                    processNextMove(players, currentPlayerIndex, board, boardView, turnLabel);
+                }
             });
 
             // ===== 오른쪽 패널 구성 =====
@@ -138,7 +165,7 @@ public class TestPieceView {
         } else {
             Piece selectedPiece;
             boolean anyOnBoard = movable.stream().anyMatch(Piece::isOnBoard);
-            if (!anyOnBoard || movable.size() == 1) {
+            if ((!anyOnBoard || movable.size() == 1)) {
                 selectedPiece = movable.get(0);
             } else {
                 String[] choices = new String[movable.size()];
@@ -169,5 +196,68 @@ public class TestPieceView {
             }
         }
     }
+
+    private static void processNextMove(
+            List<Player> players,
+            int[] currentPlayerIndex,
+            Board board,
+            BoardView boardView,
+            JLabel turnLabel
+    ) {
+        if (stepQueue.isEmpty()) {
+            isRollingPhase = true; // 다시 윷 던지기 가능
+            currentPlayerIndex[0] = (currentPlayerIndex[0] + 1) % players.size();
+            turnLabel.setText("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
+            return;
+        }
+
+        int steps = stepQueue.peek();
+
+        Player currentPlayer = players.get(currentPlayerIndex[0]);
+        List<Piece> movable = new ArrayList<>();
+        for (Piece p : currentPlayer.getPieces()) {
+            if (!p.isFinished()) movable.add(p);
+        }
+
+        if (movable.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "이동 가능한 말이 없습니다.");
+            processNextMove(players, currentPlayerIndex, board, boardView, turnLabel); // 다음 step
+            return;
+        }
+
+        Piece selectedPiece;
+        boolean anyOnBoard = movable.stream().anyMatch(Piece::isOnBoard);
+        if ((!anyOnBoard || movable.size() == 1) && stepQueue.size() == 1) {
+            selectedPiece = movable.get(0);
+        } else {
+            String[] choices = new String[movable.size()];
+            for (int i = 0; i < movable.size(); i++) {
+                choices[i] = "말 " + (i + 1);
+            }
+            int selected = JOptionPane.showOptionDialog(
+                    null,
+                    "이동할 말을 선택하세요 (" + steps + "칸):",
+                    "말 선택",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    choices,
+                    choices[0]
+            );
+            if (selected == JOptionPane.CLOSED_OPTION) return;
+
+            selectedPiece = movable.get(selected);
+        }
+        stepQueue.poll();
+        new PieceMoveController(board).movePiece(selectedPiece, steps);
+        boardView.repaint();
+
+        // 다음 step도 처리
+        SwingUtilities.invokeLater(() -> {
+            processNextMove(players, currentPlayerIndex, board, boardView, turnLabel);
+        });
+    }
+
+
 
 }

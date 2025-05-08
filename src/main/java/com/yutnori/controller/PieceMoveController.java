@@ -2,8 +2,13 @@ package com.yutnori.controller;
 
 import com.yutnori.model.*;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class PieceMoveController {
     private Board board;
+
+
 
     public PieceMoveController(Board board) {
         this.board = board;
@@ -65,4 +70,5 @@ public class PieceMoveController {
             }
         }
     }
+
 }
