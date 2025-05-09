@@ -122,6 +122,7 @@ public class GameView {
         List<Piece> movable = player.getPieces().stream()
                 .filter(p -> !p.isFinished())
                 .filter(p -> step != -1 || p.isOnBoard())
+                .filter(p -> p.getGroupLeader() == null)
                 .toList();
 
 
@@ -136,7 +137,20 @@ public class GameView {
 
         String[] options = new String[movable.size()];
         for (int i = 0; i < movable.size(); i++) {
-            options[i] = "말 " + (movable.get(i).getId() + 1);
+            Piece p = movable.get(i);
+            StringBuilder label = new StringBuilder("말 " + (p.getId() + 1));
+
+            // 업고 있는 말들 정보 추가
+            List<Piece> carried = p.getGroupingPieces();
+            if (carried != null && !carried.isEmpty()) {
+                label.append(" (업은 말: ");
+                for (int j = 0; j < carried.size(); j++) {
+                    label.append(carried.get(j).getId() + 1);  // 말 번호 1부터
+                    if (j != carried.size() - 1) label.append(", ");
+                }
+                label.append(")");
+            }
+            options[i] = label.toString();
         }
 
         int selected = JOptionPane.showOptionDialog(

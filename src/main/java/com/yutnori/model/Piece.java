@@ -110,12 +110,14 @@ public class Piece {
 
     public void setFinished(boolean finished) { isFinished = finished; } // setter method for isFinished.
     public void addGroupingPiece(Piece piece) {
+        piece.setGroupLeader(this);
         if (moveTogetherPiece == null) {
             moveTogetherPiece = new ArrayList<>();
         }
         if (!moveTogetherPiece.contains(piece)) {
             moveTogetherPiece.add(piece);
-            piece.addGroupingPiece(this); // 양방향 연결
+            // piece.addGroupingPiece(this); // 양방향 연결
+            System.out.println("Piece " + piece.getId() + " is grouped under Leader " + this.getId());
         }
     }
 
