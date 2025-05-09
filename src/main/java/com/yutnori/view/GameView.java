@@ -62,10 +62,19 @@ public class GameView {
         return this.statusView;
     }
 
-    public void render(Player currentPlayer, List<Player> allPlayers, Board board) {
+    public void render(Player currentPlayer, List<Player> allPlayers) {
         turnLabel.setText("현재 턴: " + currentPlayer.getName());
         turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
         turnLabel.setFont(new Font("NanumGothic", Font.BOLD, 25));
+
+        if (!currentPlayer.getPieces().isEmpty()) {
+            Color playerColor = currentPlayer.getPieces().get(0).getColor();
+            turnLabel.setForeground(playerColor);
+        }
+        else {
+            turnLabel.setForeground(Color.BLACK);
+        }
+
         boardView.repaint(); // 말 이동 등 상태 반영
 
         statusView.updatePlayers(allPlayers);
@@ -136,50 +145,6 @@ public class GameView {
         );
 
         return (selected == JOptionPane.CLOSED_OPTION) ? null : movable.get(selected);
-    }
-
-
-    public void promptPieceMove(
-            Player player,
-            List<Integer> steps,
-            Board board,
-            Runnable onTurnEnd
-    ) {
-        for (int step : steps) {
-            List<Piece> movable = player.getPieces().stream()
-                    .filter(p -> !p.isFinished())
-                    .toList();
-
-            if (movable.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "이동 가능한 말이 없습니다.");
-                onTurnEnd.run();
-                return;
-            }
-
-            String[] options = movable.stream()
-                    .map(p -> "말 " + p.getId())
-                    .toArray(String[]::new);
-
-            int selected = JOptionPane.showOptionDialog(
-                    null,
-                    "이동할 말을 선택하세요 (" + step + "칸):",
-                    "말 선택",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    options,
-                    options[0]
-            );
-
-            if (selected >= 0 && selected < movable.size()) {
-                Piece selectedPiece = movable.get(selected);
-                PieceMoveController moveController = new PieceMoveController(board); // ✅
-                moveController.movePiece(selectedPiece, step);
-                boardView.repaint();
-            }
-        }
-
-        onTurnEnd.run();
     }
 
 }

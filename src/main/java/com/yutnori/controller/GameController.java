@@ -21,6 +21,7 @@ public class GameController {
         this.view = view;
     }
 
+
     public void startGame() {
         renderGame();
         view.setThrowButtonListener(e -> handleYutThrow(true));
@@ -47,6 +48,7 @@ public class GameController {
     }
 
     public void handleTurn() {
+        boolean canTurn = true;
         List<Integer> steps = new ArrayList<>(stepQueue);
         stepQueue.clear();
 
@@ -54,7 +56,6 @@ public class GameController {
 
         while (!steps.isEmpty()) {
             int selectedStep = view.promptStepSelection(steps);
-            if (selectedStep == -999) return;
 
             Piece selectedPiece = view.promptPieceSelection(current, selectedStep);
             if (selectedPiece == null) return;
@@ -67,13 +68,23 @@ public class GameController {
 
             if (checkAndEndGame(current)) return;
 
-            view.render(current, game.getPlayers(), game.getBoard());  // UI 갱신
+            if (moveController.isCaptured) {
+                JOptionPane.showMessageDialog(null, "상대방의 말을 잡았습니다!");
+                canTurn = false;
+            }
+
+            view.render(current, game.getPlayers());  // UI 갱신
             steps.remove((Integer) selectedStep);  // step 제거
         }
 
-        game.nextPlayer();
+        if (canTurn) {
+            game.nextPlayer();
+        }
+
         isRollingPhase = true;
+
         renderGame();
+
     }
 
 
@@ -103,6 +114,6 @@ public class GameController {
 
     public void renderGame() {
         Player currentPlayer = game.getCurrentPlayer();
-        view.render(currentPlayer, game.getPlayers(), game.getBoard());
+        view.render(currentPlayer, game.getPlayers());
     }
 }
