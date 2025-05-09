@@ -5,19 +5,18 @@ import java.util.*;
 import java.util.List;
 
 public class Piece {
-    private int id;
+    private final int id;
     private Cell position;
     private int distance; // 말이 이동한 거리 (나중에 finish할때 사용한다고 함, 참고하여 사용 바람.)
     public List<Piece> moveTogetherPiece;
     private Piece groupLeader = null;
-    private Player owner;
+    private final Player owner;
     private boolean isOnBoard = false;
     private boolean isFinished = false; // 한바퀴 다 돌고 온 말인지 여부를 판별하기 위한 boolean
     private boolean passedStartOnce = false; // 도착지점 (출발지점) 에 도착했는지 여부를 판별하기 위한 boolean
     public Stack<Integer> history = new Stack<Integer>() {
         @Override
         public Integer push(Integer item) {
-
             return super.push(item);
         }
 
@@ -75,7 +74,7 @@ public class Piece {
         if (position != null) {
             position.removePiece(this);
         }
-
+        history.clear();
         position = null;
         isFinished = true;
         isOnBoard = false;
@@ -94,7 +93,6 @@ public class Piece {
         distance = 0;
         moveTogetherPiece.clear(); // 업힌 말 초기화
     }
-
 
     public Cell getPosition() { // to get the position of the piece
         return position;
@@ -137,13 +135,11 @@ public class Piece {
             moveTogetherPiece.add(piece);
             piece.addGroupingPiece(this); // 양방향 연결
         }
-
     }
 
     public List<Piece> getGroupingPieces() {
         return moveTogetherPiece != null ? moveTogetherPiece : new ArrayList<>();
     }
-
 
     // 말을 잡을 때, 기존 group 해제해야함.
     public void resetGrouping() {
@@ -173,5 +169,6 @@ public class Piece {
     }
 
     public Piece getGroupLeader() { return groupLeader; }
+
     public void setGroupLeader(Piece groupLeader) { this.groupLeader = groupLeader; }
 }

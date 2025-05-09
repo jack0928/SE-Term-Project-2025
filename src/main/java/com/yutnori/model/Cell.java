@@ -1,21 +1,21 @@
 package com.yutnori.model;
 
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 public class Cell {
     private int id;
-    private boolean isCenter;
-    private boolean isCorner;
+    //private boolean isCenter;
+    //private boolean isCorner;
     private List<Piece> piecesOnCell;
 
 
-    public Cell(int id, boolean isCenter, boolean isCorner) {
+    public Cell(int id) {
         this.id = id;
+        /*
         this.isCenter = isCenter;
         this.isCorner = isCorner;
+         */
         this.piecesOnCell = new ArrayList<>();
     }
 
@@ -41,7 +41,6 @@ public class Cell {
         for (Piece groupedPiece : piece.getGroupingPieces()) {
             if (piecesOnCell.contains(groupedPiece)) {
                 piecesOnCell.remove(groupedPiece);
-                System.out.println("Grouped Piece " + groupedPiece.getId() + " also removed from Cell " + id);
             }
 
         }
