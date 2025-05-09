@@ -11,14 +11,57 @@ import java.util.Queue;
 import java.util.LinkedList;
 
 public class GameController {
-    private final Game game;
-    private final GameView view;
+    private Game game;
+    private GameView view;
     private final Queue<Integer> stepQueue = new LinkedList<>();
     private boolean isRollingPhase = true; // true: 윷 던지기, false: 말 이동
 
-    public GameController(Game game, GameView view) {
-        this.game = game;
-        this.view = view;
+    public GameController() {
+        initializeGame(); // default constructor에서 initializeGame() 호출, initializes the game.
+    }
+
+    public void initializeGame() {
+        // 1. 사용자 입력
+        String[] boardOptions = {"Square", "Pentagon", "Hexagon"};
+        String selectedBoard = (String) JOptionPane.showInputDialog(
+                null, "보드 형태를 선택하세요:", "보드 선택",
+                JOptionPane.PLAIN_MESSAGE, null, boardOptions, boardOptions[0]);
+        if (selectedBoard == null) return;
+
+        Board board = switch (selectedBoard) {
+            case "Pentagon" -> new PentagonBoard();
+            case "Hexagon" -> new HexagonBoard();
+            default -> new SquareBoard();
+        };
+
+        Integer[] playerCounts = {2, 3, 4};
+        Integer selectedPlayerCount = (Integer) JOptionPane.showInputDialog(
+                null, "플레이어 수를 선택하세요:", "플레이어 수 선택",
+                JOptionPane.PLAIN_MESSAGE, null, playerCounts, playerCounts[0]);
+        if (selectedPlayerCount == null) return;
+
+        Integer[] pieceCounts = {2, 3, 4, 5};
+        Integer selectedPieceCount = (Integer) JOptionPane.showInputDialog(
+                null, "플레이어당 말 개수를 선택하세요:", "말 개수 선택",
+                JOptionPane.PLAIN_MESSAGE, null, pieceCounts, pieceCounts[0]);
+        if (selectedPieceCount == null) return;
+
+        // 2. 플레이어 및 말 생성
+        List<Player> players = new ArrayList<>();
+        for (int i = 1; i <= selectedPlayerCount; i++) {
+            Player player = new Player("Player" + i);
+            for (int j = 0; j < selectedPieceCount; j++) {
+                player.addPiece(new Piece(j, player));
+            }
+            players.add(player);
+        }
+
+        // 3. 모델/뷰 생성 및 저장
+        this.game = new Game(players, board, selectedPieceCount);
+        this.view = new GameView(board, players);
+
+        // 4. 게임 시작
+        startGame();
     }
 
 
@@ -53,7 +96,12 @@ public class GameController {
             int selectedStep = view.promptStepSelection(steps);
 
             Piece selectedPiece = view.promptPieceSelection(current, selectedStep);
-            if (selectedPiece == null) return;
+            if (selectedPiece == null) { // 이동할 말이 없을 경우, 바로 턴 넘기고 return.
+                game.nextPlayer();
+                isRollingPhase = true;
+                renderGame();
+                return;
+            }
 
             PieceMoveController moveController = new PieceMoveController(game.getBoard());
             moveController.movePiece(selectedPiece, selectedStep);
