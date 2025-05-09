@@ -47,7 +47,7 @@ public class HexagonBoard extends Board {
     protected void initializeCells() {
         cells = new ArrayList<>();
         for (int id = 0; id <= 42; id++) {
-            cells.add(new Cell(id, isCentre(id), isCorner(id)));
+            cells.add(new Cell(id));
         }
     }
 
@@ -144,7 +144,6 @@ public class HexagonBoard extends Board {
 
         for (int i = 0; i < steps; i++){
             piece.history.push(destCell.getId());
-            System.out.println("history : " + piece.history);
             if (i==0) destCell =  board.getCells().get(nextPositionSpecial.get(destCell.getId()));
             else destCell =  board.getCells().get(nextPositionGeneral.get(destCell.getId()));
         }

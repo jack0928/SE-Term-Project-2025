@@ -41,7 +41,6 @@ public class PieceMoveController {
         }
         if (steps == -1) { // 빽도일 때 (말이 보드에 올라와 있음)
             if(!piece.history.isEmpty()){
-                System.out.println(piece.history.peek());
                 piece.moveTo(board.getCells().get(piece.history.pop()));
                 this.isCaptured = handleCapture(piece);
                 handleGrouping(piece); // grouping 처리
@@ -81,7 +80,6 @@ public class PieceMoveController {
                 other.reset(); // 잡힌 말 원위치 처리
                 other.resetGrouping();
                 piece.setGroupLeader(null);
-                System.out.println("Piece " + other.getId() + " of player " + other.getOwner().getName() + " is captured!");
                 captureOccurred = true; // 캡처 발생
             }
         }
@@ -101,7 +99,6 @@ public class PieceMoveController {
                     other.addGroupingPiece(piece);  // 현재 piece를 other에 포함
                     piece.setGroupLeader(other);
                 }
-
                 break; // 첫 번째 그룹화된 말과만 연결
             }
         }
@@ -142,9 +139,6 @@ public class PieceMoveController {
         if (zeroCount > 1) { // zeroCount가 1보다 크다면, 출발점을 두번 이상 밟았다는 의미 == 한 바퀴 이상 돌았다는 의미.
             finishPiece(piece); // 업힌 말 포함, 끝내기 처리
         }
-
-
     }
-
 
 }

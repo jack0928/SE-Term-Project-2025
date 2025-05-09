@@ -54,10 +54,11 @@ public class YutResultView extends JPanel {
     public JButton getThrowRandomButton() {
         return throwRandomButton;
     }
-
+    /*
     public JComboBox<String> getSelectYutDropdown() {
         return selectYutDropdown;
     }
+     */
 
     // 드롭다운에서 선택된 윷 결과를 정수 값으로 반환
     public int getSelectedYutValue() {

@@ -6,13 +6,11 @@ import java.util.stream.IntStream;
 
 public class SquareBoard extends Board {
     private static final int[] CORNERS = {0, 5, 10, 15};    // 사각 윷판의 코너 ID
-    private static final int[] BRANCHED_CORNERS = {5, 10, 22};
     private static final int[] CENTRE = {22, 27};                   // 코드 가독성을 위한 리팩토링
 
     private static final Map<Integer, Integer> nextPositionGeneral;
     static {
         Map<Integer,Integer> m = new HashMap<>();
-        // 바깥쪽
         for (int i = 0; i < 19; i++) {
             m.put(i,i+1);
         }
@@ -43,12 +41,11 @@ public class SquareBoard extends Board {
         initializeInnerPath();
     }
 
-
     @Override
     protected void initializeCells() {
         cells = new ArrayList<>();
         for (int id = 0; id <= 29; id++) {
-            cells.add(new Cell(id, isCentre(id), isCorner(id)));
+            cells.add(new Cell(id));
         }
     }
     @Override
@@ -56,8 +53,6 @@ public class SquareBoard extends Board {
 
     @Override
     public boolean isCentre(int id) { return id == CENTRE[0] || id == CENTRE[1]; }
-
-    public boolean isBranchCorner(int id) { return IntStream.of(BRANCHED_CORNERS).anyMatch(c -> c == id); }
 
     @Override
     protected void initializeNodePositions() {
