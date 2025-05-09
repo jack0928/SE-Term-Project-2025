@@ -43,24 +43,6 @@ public class Yut {
         return results.getLast();
     }
 
-    // 선택된 윷 결과 반환
-    public int getResultAt(int index) {
-        if (index < 0 || index >= results.size()) {
-            throw new IndexOutOfBoundsException("요청한 윷 결과 인덱스가 범위를 벗어났습니다."); // 예외 처리 추가
-        }
-        return results.get(index);
-    }
-
-    // 모든 결과 초기화
-    public void resetResults() {
-        results.clear();
-    }
-
-    // 마지막 던진 결과가 윷(4) 또는 모(5)인지 확인
-    public boolean lastIsExtraTurn() {
-        int last = getLastResult();
-        return last == 4 || last == 5; // 윷(4) 또는 모(5)일 경우 true 반환
-    }
     //view 작성중 필요하여 추가
     public boolean isEmpty() {
         return results.isEmpty(); // 결과 리스트가 비어있으면 true 반환

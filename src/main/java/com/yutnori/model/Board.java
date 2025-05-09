@@ -14,22 +14,18 @@ public abstract class Board {
 
     protected abstract void initializeCells();
 
-    // 아래 3개의 function들은 추후 logic을 위해 사용될지도 몰라서 일단 추상화 해놓음; 나중에 logic 구현 시 필요하면 사용 / 필요 없을 시 파기.
     public List<Cell> getCells() {
         return cells;
     }
 
     public abstract Cell getDestinationCell(Cell current, int steps, Board board, Piece piece); // Cell의 NextCell과 겹치지 않게 이름 변경
 
-//    public abstract boolean isValidMove(int currentId, int steps);
 
 
-
-
-
+    // getter method for nodePositions
     public Map<Integer, Point> getNodePositions() {
         return nodePositions;
-    } // getter method for nodePositions
+    }
 
     public Point getNodePosition(int id) { return nodePositions.get(id); } // 노드 id에 해당하는 위치를 반환하는 메소드
 

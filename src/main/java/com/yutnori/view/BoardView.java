@@ -107,13 +107,13 @@ public class BoardView extends JPanel{
     }
     private void drawCarriedCount(Graphics g, Cell cell, Point pos) {
         int count = 0;
-        for (Piece piece : cell.getStackedPieces()) {
-            count += piece.getGroupingPieceCount();
+        for (int i=0; i<cell.getStackedPieces().size(); i++) {
+            count++; // 말이 쌓인 갯수를 셈
         }
-        if (count > 0) {
+        if (count > 1) { // 말이 한 cell 위에 업혀서 2개 이상 쌓였을 때
             g.setColor(Color.BLACK);
             g.setFont(new Font("Arial", Font.BOLD, 12));
-            g.drawString("+" + count, pos.x + 10, pos.y - 10);
+            g.drawString("x" + count, pos.x + 10, pos.y - 10);
         }
     }
 

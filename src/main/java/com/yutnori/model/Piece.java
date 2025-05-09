@@ -144,9 +144,6 @@ public class Piece {
         return moveTogetherPiece != null ? moveTogetherPiece : new ArrayList<>();
     }
 
-    public int getGroupingPieceCount() { // grouping 이후, 업힌 말의 갯수를 가져옴
-        return moveTogetherPiece.size();
-    }
 
     // 말을 잡을 때, 기존 group 해제해야함.
     public void resetGrouping() {
