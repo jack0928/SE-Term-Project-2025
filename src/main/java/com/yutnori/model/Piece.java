@@ -91,9 +91,9 @@ public class Piece {
         position = null;
         isOnBoard = false;
         isFinished = false;
+        moveTogetherPiece.clear(); // 업힌 말 초기화
         // TODO: passedStartOnce 초기화 해야 함 (그냥 아래 줄 주석해제 하면 됨)
         //  passedStartOnce = false;
-        moveTogetherPiece.clear(); // 업힌 말 초기화
     }
 
 
