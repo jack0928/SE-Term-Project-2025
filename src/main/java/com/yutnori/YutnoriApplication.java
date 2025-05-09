@@ -5,17 +5,12 @@ import com.yutnori.model.*;
 import com.yutnori.view.GameView;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class YutnoriApplication {
     public static void main(String[] args) {
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        for (String font : ge.getAvailableFontFamilyNames()) {
-            System.out.println(font);
-        }
         SwingUtilities.invokeLater(() -> {
             // 보드 선택
             String[] boardOptions = {"Square", "Pentagon", "Hexagon"};
