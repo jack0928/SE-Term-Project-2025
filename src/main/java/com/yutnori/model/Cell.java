@@ -41,7 +41,6 @@ public class Cell {
         for (Piece groupedPiece : piece.getGroupingPieces()) {
             if (piecesOnCell.contains(groupedPiece)) {
                 piecesOnCell.remove(groupedPiece);
-                System.out.println("Grouped Piece " + groupedPiece.getId() + " also removed from Cell " + id);
             }
 
         }

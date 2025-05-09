@@ -129,7 +129,6 @@ public class SquareBoard extends Board {
 
         for (int i = 0; i < steps; i++){
             piece.history.push(destCell.getId());
-            System.out.println("history : " + piece.history);
             if (i==0) destCell =  board.getCells().get(nextPositionSpecial.get(destCell.getId()));
             else destCell =  board.getCells().get(nextPositionGeneral.get(destCell.getId()));
         }

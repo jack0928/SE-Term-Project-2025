@@ -70,18 +70,6 @@ public class Piece {
     }
 
 
-    public void finish() {
-        // 현재 위치에서 제거
-        if (position != null) {
-            position.removePiece(this);
-        }
-
-        position = null;
-        isFinished = true;
-        isOnBoard = false;
-        moveTogetherPiece.clear(); // 업힌 말 초기화
-    }
-
     public void reset() {
         // 보드 상 위치 제거
         if (position != null) {
