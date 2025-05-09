@@ -116,8 +116,6 @@ public class Piece {
         }
         if (!moveTogetherPiece.contains(piece)) {
             moveTogetherPiece.add(piece);
-            // piece.addGroupingPiece(this); // 양방향 연결
-            System.out.println("Piece " + piece.getId() + " is grouped under Leader " + this.getId());
         }
     }
 
