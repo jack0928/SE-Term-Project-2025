@@ -154,4 +154,15 @@ public class Piece {
 
     public void setGroupLeader(Piece groupLeader) { this.groupLeader = groupLeader; }
 
+    public Piece getGroupLeaderOrSelf() {
+        return (groupLeader != null) ? groupLeader : this;
+    }
+
+    public List<Piece> getAllGroupedPieces() {
+        List<Piece> all = new ArrayList<>(moveTogetherPiece);
+        all.add(this);
+        return all;
+    }
+
+
 }
