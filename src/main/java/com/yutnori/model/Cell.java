@@ -10,11 +10,6 @@ public class Cell {
     private boolean isCenter;
     private boolean isCorner;
     private List<Piece> piecesOnCell;
-    //graph로 구현
-
-    // private Cell nextCell;
-    // private Cell previousCell;
-    // private Cell nextBranchCell;  // 코너 이외에도 다음 노드의 id가 바뀌는 부분 저장.
 
 
     public Cell(int id, boolean isCenter, boolean isCorner) {
@@ -26,17 +21,10 @@ public class Cell {
 
     public int getId() {
         return id;
-    }
-    public boolean isCenter() { return isCenter; }
-
-    public void setCenter(boolean center) { isCenter = center; }
-
-    public boolean isCorner() { return isCorner; }
-
-    public void setCorner(boolean corner) { isCorner = corner; }
+    } // Cell의 id를 return.
 
 
-    public void addPiece(Piece piece) {
+    public void addPiece(Piece piece) { // Cell 위에 Piece를 추가하는 메소드
         if (!piecesOnCell.contains(piece)) {
             piecesOnCell.add(piece);
         }
@@ -48,7 +36,7 @@ public class Cell {
 
     }
 
-    public void removePiece(Piece piece) {
+    public void removePiece(Piece piece) { // Cell 위에 있는 Piece를 제거하는 메소드
         piecesOnCell.remove(piece);
         for (Piece groupedPiece : piece.getGroupingPieces()) {
             if (piecesOnCell.contains(groupedPiece)) {
@@ -60,7 +48,7 @@ public class Cell {
 
     }
 
-    public List<Piece> getStackedPieces() {
+    public List<Piece> getStackedPieces() { // Cell 위에 있는 Piece들을 반환하는 메소드 (stackedPieces)
         return piecesOnCell;
     }
 

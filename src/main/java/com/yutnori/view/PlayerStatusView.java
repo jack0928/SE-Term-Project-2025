@@ -13,7 +13,7 @@ public class PlayerStatusView extends JPanel {
 
     private final List<JLabel> playerLabels = new java.util.ArrayList<>();
 
-    public void render(List<Player> players) {
+    public void render(List<Player> players) { // Player 점수 반환
         removeAll();
         setLayout(new GridLayout(players.size(), 1));
 
@@ -30,7 +30,7 @@ public class PlayerStatusView extends JPanel {
         repaint();
     }
 
-    public void updatePlayers(List<Player> players) {
+    public void updateFinishedPieces(List<Player> players) { // 완료된 말(들) 업데이트
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
 

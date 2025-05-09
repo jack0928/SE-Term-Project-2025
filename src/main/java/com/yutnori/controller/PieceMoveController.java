@@ -130,17 +130,17 @@ public class PieceMoveController {
         Stack<Integer> history = piece.getHistory();
         // 출발점에 도달했고, 한 바퀴 이상 돈 경우
         if (piece.getPosition().getId() == 0 && history.size() > 1) {
-            finishPiece(piece); // 업힌 말 포함 처리
+            finishPiece(piece); // 업힌 말 포함, 끝내기 처리
         }
 
-        int zeroCount = 0;
+        int zeroCount = 0; // history 내에서 0의 갯수 (출발점을 몇번 밟았는가?)
         for (int id : history) {
             if (id == 0) {
-                zeroCount++;
+                zeroCount++; // 출발점을 한번 밟을 때마다 카운트가 증가
             }
         }
-        if (zeroCount > 1) {
-            finishPiece(piece); // 업힌 말 포함 처리
+        if (zeroCount > 1) { // zeroCount가 1보다 크다면, 출발점을 두번 이상 밟았다는 의미 == 한 바퀴 이상 돌았다는 의미.
+            finishPiece(piece); // 업힌 말 포함, 끝내기 처리
         }
 
 

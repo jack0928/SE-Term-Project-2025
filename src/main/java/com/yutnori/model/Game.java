@@ -24,10 +24,6 @@ public class Game {
         return board;
     }
 
-    public int getCurrentPlayerIndex() {
-        return currentPlayerIndex;
-    }
-
     public void nextPlayer() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
@@ -40,35 +36,4 @@ public class Game {
         return pieceNumPerPlayer;
     }
 
-    public boolean checkWinCondition() {
-        for (Player player : players) {
-            long finishedCount = player.getPieces().stream()
-                    .filter(Piece::isFinished)
-                    .count();
-            if (finishedCount == pieceNumPerPlayer) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Player getWinningPlayer() {
-        for (Player player : players) {
-            long finishedCount = player.getPieces().stream()
-                    .filter(Piece::isFinished)
-                    .count();
-            if (finishedCount == pieceNumPerPlayer) {
-                return player;
-            }
-        }
-        return null;
-    }
-
-    // 선택적으로 재시작 기능을 넣고 싶을 경우
-    public void resetGame() {
-        for (Player player : players) {
-            player.getPieces().forEach(Piece::reset); // Piece 클래스에 reset() 필요
-        }
-        currentPlayerIndex = 0;
-    }
 }

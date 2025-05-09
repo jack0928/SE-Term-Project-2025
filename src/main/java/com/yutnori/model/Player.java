@@ -23,12 +23,6 @@ public class Player {
         score += points;
     }
 
-    public List<Piece> getActivePieces() {
-        return pieces.stream()
-                .filter(p -> p.getPosition() != null)  // 아직 완주하지 않은 말
-                .collect(Collectors.toList());
-    }
-
     public String getName() {
         return name;
     }

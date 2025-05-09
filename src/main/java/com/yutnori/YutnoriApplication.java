@@ -17,7 +17,7 @@ public class YutnoriApplication {
             System.out.println(font);
         }
         SwingUtilities.invokeLater(() -> {
-            // ===== 보드 선택 =====
+            // 보드 선택
             String[] boardOptions = {"Square", "Pentagon", "Hexagon"};
             String selectedBoard = (String) JOptionPane.showInputDialog(
                     null,
@@ -37,7 +37,7 @@ public class YutnoriApplication {
                 default -> new SquareBoard();
             };
 
-            // ===== 플레이어 수 선택 =====
+            // 플레이어 수 선택
             Integer[] playerCounts = {2, 3, 4};
             Integer selectedPlayerCount = (Integer) JOptionPane.showInputDialog(
                     null,
@@ -50,7 +50,7 @@ public class YutnoriApplication {
             );
             if (selectedPlayerCount == null) return;
 
-            // ===== 말 개수 선택 =====
+            // 말 갯수 선택
             Integer[] pieceCounts = {2, 3, 4, 5};
             Integer selectedPieceCount = (Integer) JOptionPane.showInputDialog(
                     null,
@@ -63,7 +63,7 @@ public class YutnoriApplication {
             );
             if (selectedPieceCount == null) return;
 
-            // ===== 플레이어 및 말 생성 =====
+            // 플레이어 말 생성
             List<Player> players = new ArrayList<>();
             for (int i = 1; i <= selectedPlayerCount; i++) {
                 Player player = new Player("Player" + i);
@@ -73,18 +73,12 @@ public class YutnoriApplication {
                 players.add(player);
             }
 
-            // ===== MVC 연결 =====
+            // 게임 시작
             Game game = new Game(players, board, selectedPieceCount);
             GameView view = new GameView(board, players);
             GameController controller = new GameController(game, view);
 
-            controller.startGame(); // 🎯 게임 시작
+            controller.startGame();
         });
-    }
-
-    public static void restartGame(JFrame currentFrame) {
-        currentFrame.dispose(); // 기존 창 닫기
-        Player.resetCounter();
-        SwingUtilities.invokeLater(() -> main(null));          // 새로운 게임 시작
     }
 }

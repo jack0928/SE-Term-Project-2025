@@ -20,7 +20,7 @@ public class GameView {
     private final YutController yutController;
 
     public GameView(Board board, List<Player> players) {
-        // === 모델 연결 ===
+        // 모델 연결
         this.yut = new Yut();
         this.resultView = new YutResultView();
         this.yutController = new YutController(yut, resultView);
@@ -29,7 +29,7 @@ public class GameView {
         this.turnLabel = new JLabel();
         this.turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // === 프레임 및 패널 구성 ===
+        // 프레임 및 패널 구성
         this.frame = new JFrame("Yut Game");
         this.mainPanel = new JPanel(new BorderLayout());
 
@@ -41,34 +41,36 @@ public class GameView {
         rightPanel.add(statusView);
         statusView.render(players);
 
+        // 보드뷰 및 상태뷰 추가
         mainPanel.add(boardView, BorderLayout.CENTER);
         mainPanel.add(rightPanel, BorderLayout.EAST);
 
+        // 프레임 설정
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(mainPanel);
         frame.pack();
         frame.setVisible(true);
     }
 
-    public JFrame getFrame() {
+    public JFrame getFrame() { // 프레임 반환
         return this.frame;
     }
 
-    public BoardView getBoardView() {
+    public BoardView getBoardView() { // 보드뷰 반환
         return this.boardView;
     }
 
-    public PlayerStatusView getStatusView() {
+    public PlayerStatusView getStatusView() { // 플레이어 상태뷰 반환
         return this.statusView;
     }
 
-    public void render(Player currentPlayer, List<Player> allPlayers) {
+    public void render(Player currentPlayer, List<Player> allPlayers) { // 현재 턴 플레이어 및 전체 플레이어 상태 업데이트 (rendering)
         turnLabel.setText("현재 턴: " + currentPlayer.getName());
         turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        turnLabel.setFont(new Font("NanumGothic", Font.BOLD, 25));
+        turnLabel.setFont(new Font("NanumGothic", Font.BOLD, 25)); // 폰트 변경 및 크기 조정
 
         if (!currentPlayer.getPieces().isEmpty()) {
-            Color playerColor = currentPlayer.getPieces().get(0).getColor();
+            Color playerColor = currentPlayer.getPieces().get(0).getColor(); // 플레이어의 말 색상으로 색깔을 설정.
             turnLabel.setForeground(playerColor);
         }
         else {
@@ -77,14 +79,14 @@ public class GameView {
 
         boardView.repaint(); // 말 이동 등 상태 반영
 
-        statusView.updatePlayers(allPlayers);
+        statusView.updateFinishedPieces(allPlayers);
     }
 
-    public void setThrowButtonListener(ActionListener listener) {
+    public void setThrowRandomButtonListener(ActionListener listener) { // 랜덤 윷 던지기 버튼
         resultView.getThrowRandomButton().addActionListener(listener);
     }
 
-    public void setSelectButtonListener(ActionListener listener) {
+    public void setSelectButtonListener(ActionListener listener) { // 선택된 윷 던지기 버튼
         resultView.getSelectYutButton().addActionListener(listener);
     }
 
@@ -93,7 +95,7 @@ public class GameView {
         return yut.getLastResult();
     }
 
-    public int promptStepSelection(List<Integer> steps) {
+    public int promptStepSelection(List<Integer> steps) { // 이동할 칸 수 선택
         if (steps.size() == 1) return steps.get(0);
 
         String[] stepOptions = steps.stream()
@@ -111,10 +113,10 @@ public class GameView {
                 stepOptions[0]
         );
 
-        return (selected == JOptionPane.CLOSED_OPTION) ? -999 : steps.get(selected);
+        return steps.get(selected); // 선택된 step 반환
     }
 
-    public Piece promptPieceSelection(Player player, int step) {
+    public Piece promptPieceSelection(Player player, int step) { // 이동할 말 선택
         List<Piece> movable = player.getPieces().stream()
                 .filter(p -> !p.isFinished())
                 .toList();
