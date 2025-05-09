@@ -99,7 +99,6 @@ public class PieceMoveController {
                     other.addGroupingPiece(piece);  // 현재 piece를 other에 포함
                     piece.setGroupLeader(other);
                 }
-
                 break; // 첫 번째 그룹화된 말과만 연결
             }
         }
@@ -140,9 +139,6 @@ public class PieceMoveController {
         if (zeroCount > 1) { // zeroCount가 1보다 크다면, 출발점을 두번 이상 밟았다는 의미 == 한 바퀴 이상 돌았다는 의미.
             finishPiece(piece); // 업힌 말 포함, 끝내기 처리
         }
-
-
     }
-
 
 }
