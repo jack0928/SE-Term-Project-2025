@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Player {
-    private static int nextId = 1; // 🔹 자동 증가 ID용 static 변수
+    private static int nextId = 1; // 자동 증가 ID용 static 변수
 
     private String name;
     private List<Piece> pieces;
@@ -16,7 +16,7 @@ public class Player {
         this.name = name;
         this.pieces = new ArrayList<>();
         this.score = 0;
-        this.id = nextId++; // 🔹 ID 자동 할당
+        this.id = nextId++; // ID 자동 할당
     }
 
     public void addScore(int points) {
@@ -49,8 +49,8 @@ public class Player {
         return id;
     }
 
-    // 테스트용: ID 초기화
-    public static void resetIdCounter() {
+    public static void resetCounter() {
         nextId = 1;
     }
+
 }

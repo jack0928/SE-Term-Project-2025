@@ -2,10 +2,7 @@ package com.yutnori.controller;
 
 import com.yutnori.model.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class PieceMoveController {
     private Board board;
@@ -123,17 +120,30 @@ public class PieceMoveController {
             }
             p.setPosition(null);
 
-
+            p.getOwner().addScore(100); // 말이 들어올때마다 100점씩 추가
         }
 
         piece.getGroupingPieces().clear(); // 업은 목록 초기화
     }
 
     private void checkFinishCondition(Piece piece) {
+        Stack<Integer> history = piece.getHistory();
         // 출발점에 도달했고, 한 바퀴 이상 돈 경우
-        if (piece.getPosition().getId() == 0 && piece.getHistory().size() > 1) {
+        if (piece.getPosition().getId() == 0 && history.size() > 1) {
             finishPiece(piece); // 업힌 말 포함 처리
         }
+
+        int zeroCount = 0;
+        for (int id : history) {
+            if (id == 0) {
+                zeroCount++;
+            }
+        }
+        if (zeroCount > 1) {
+            finishPiece(piece); // 업힌 말 포함 처리
+        }
+
+
     }
 
 

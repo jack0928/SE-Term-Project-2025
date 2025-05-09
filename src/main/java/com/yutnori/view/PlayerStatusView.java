@@ -20,6 +20,8 @@ public class PlayerStatusView extends JPanel {
         playerLabels.clear();
         for (Player p : players) {
             JLabel label = new JLabel(p.getName() + " - 점수: " + p.getScore());
+            label.setFont(new Font("NanumGothic", Font.PLAIN, 17));
+            label.setHorizontalAlignment(SwingConstants.CENTER);
             playerLabels.add(label);
             add(label);
         }

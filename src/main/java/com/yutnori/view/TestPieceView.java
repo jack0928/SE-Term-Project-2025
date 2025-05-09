@@ -16,6 +16,8 @@ public class TestPieceView {
     private static final Queue<Integer> stepQueue = new LinkedList<>();
     private static boolean isRollingPhase = true; // 윷 던지기 가능한 상태인지
 
+    private static JPanel mainPanel; // 전체 레이아웃을 담을 패널
+
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
@@ -80,7 +82,6 @@ public class TestPieceView {
             Yut yut = new Yut();
             YutResultView yutResultView = new YutResultView();
             yutResultView.setPreferredSize(new Dimension(400, 150));
-            PieceMoveController mover = new PieceMoveController(board);
             YutController yutController = new YutController(yut, yutResultView);
 
             PlayerStatusView statusView = new PlayerStatusView();
@@ -133,7 +134,7 @@ public class TestPieceView {
 
 
             // ===== 전체 레이아웃 구성 =====
-            JPanel mainPanel = new JPanel(new BorderLayout());
+            mainPanel = new JPanel(new BorderLayout());
             mainPanel.add(boardView, BorderLayout.CENTER);
             mainPanel.add(rightPanel, BorderLayout.EAST);
 
@@ -226,6 +227,10 @@ public class TestPieceView {
             //                      -> 모 도 나옴 -> 모 이동 -> 도 이동-> 잡았으니 한 번 더
             // 이렇게 작동함
             pmController.movePiece(selectedPiece, selectedStep);
+            if (checkVictory(currentPlayer)) {
+                handleVictory(currentPlayer);
+                return;
+            }
             if (pmController.isCaptured){
                 currentPlayerIndex[0] = (currentPlayerIndex[0] + 1) % players.size();
                 turnLabel.setText("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
@@ -243,6 +248,47 @@ public class TestPieceView {
         turnLabel.setText("현재 턴: " + players.get(currentPlayerIndex[0]).getName());
 
     }
+
+    private static boolean checkVictory(Player player) {
+        int finishedCount = 0;
+        for (Piece piece : player.getPieces()) {
+            if (piece.isFinished()) {
+                finishedCount++;
+            }
+        }
+        return finishedCount == player.getPieces().size();
+    }
+
+    private static void handleVictory(Player winner) {
+        JOptionPane.showMessageDialog(null,
+                "🎉 Player " + winner.getId() + " wins!",
+                "Game Over",
+                JOptionPane.INFORMATION_MESSAGE);
+
+        int choice = JOptionPane.showOptionDialog(null,
+                "게임을 다시 시작하시겠습니까?",
+                "게임 종료",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new String[]{"Restart", "Exit"},
+                "Restart");
+
+        if (choice == JOptionPane.YES_OPTION) {
+            restartGame();
+        } else {
+            System.exit(0);
+        }
+    }
+
+    private static void restartGame() {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(mainPanel); // mainPanel 전역 필드
+        if (topFrame != null) topFrame.dispose();
+        SwingUtilities.invokeLater(() -> main(null)); // 게임 다시 시작
+    }
+
+
+
 
 
 
