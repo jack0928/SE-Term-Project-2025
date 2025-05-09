@@ -3,8 +3,6 @@ package com.yutnori.controller;
 import com.yutnori.model.Yut;
 import com.yutnori.view.YutResultView;
 
-import javax.swing.*;
-
 public class YutController {
     private final Yut yut;
     private final YutResultView view;

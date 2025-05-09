@@ -5,7 +5,6 @@ import com.yutnori.model.*;
 import com.yutnori.view.GameView;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

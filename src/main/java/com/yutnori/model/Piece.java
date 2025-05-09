@@ -7,7 +7,6 @@ import java.util.List;
 public class Piece {
     private final int id;
     private Cell position;
-    private int distance; // 말이 이동한 거리 (나중에 finish할때 사용한다고 함, 참고하여 사용 바람.)
     public List<Piece> moveTogetherPiece;
     private Piece groupLeader = null;
     private final Player owner;
@@ -49,7 +48,6 @@ public class Piece {
     public Piece(int id, Player owner) {
         this.id = id;
         this.owner = owner;
-        this.distance = 0;
         this.moveTogetherPiece = new ArrayList<>();
     }
 
@@ -57,28 +55,13 @@ public class Piece {
         if (position != null) {
             position.removePiece(this);  // 이전 Cell에서 제거
         }
-
         position = cell;
 
         if (cell != null) {
             cell.addPiece(this);
             isOnBoard = true;
-        } else {
-            isOnBoard = false;
         }
-    }
-
-
-    public void finish() {
-        // 현재 위치에서 제거
-        if (position != null) {
-            position.removePiece(this);
-        }
-        history.clear();
-        position = null;
-        isFinished = true;
-        isOnBoard = false;
-        moveTogetherPiece.clear(); // 업힌 말 초기화
+        else { isOnBoard = false; }
     }
 
     public void reset() {
@@ -90,7 +73,6 @@ public class Piece {
         position = null;
         isOnBoard = false;
         isFinished = false;
-        distance = 0;
         moveTogetherPiece.clear(); // 업힌 말 초기화
     }
 
@@ -171,4 +153,5 @@ public class Piece {
     public Piece getGroupLeader() { return groupLeader; }
 
     public void setGroupLeader(Piece groupLeader) { this.groupLeader = groupLeader; }
+
 }

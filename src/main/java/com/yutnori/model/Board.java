@@ -22,7 +22,6 @@ public abstract class Board {
     public void setCells(List<Cell> cells) { this.cells = cells; }
     public abstract Cell getDestinationCell(Cell current, int steps, Board board, Piece piece); // Cell의 NextCell과 겹치지 않게 이름 변경
 
-    // getter method for nodePositions
     public Map<Integer, Point> getNodePositions() { return nodePositions; }
 
     public Point getNodePosition(int id) { return nodePositions.get(id); } // 노드 id에 해당하는 위치를 반환하는 메소드
