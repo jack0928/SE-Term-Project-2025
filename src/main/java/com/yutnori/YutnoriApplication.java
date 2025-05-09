@@ -4,7 +4,6 @@ import com.yutnori.controller.GameController;
 
 
 import javax.swing.*;
-import java.awt.*;
 
 public class YutnoriApplication {
     public static void main(String[] args) {
