@@ -103,6 +103,8 @@ public class GameController {
                 return;
             }
 
+
+
             PieceMoveController moveController = new PieceMoveController(game.getBoard());
             moveController.movePiece(selectedPiece, selectedStep);
 

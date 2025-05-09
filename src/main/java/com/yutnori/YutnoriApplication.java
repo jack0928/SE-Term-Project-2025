@@ -7,6 +7,7 @@ import javax.swing.*;
 
 public class YutnoriApplication {
     public static void main(String[] args) {
+        // Game Controller 생성 및 실행
         SwingUtilities.invokeLater(() -> {
             GameController controller = new GameController();
         });

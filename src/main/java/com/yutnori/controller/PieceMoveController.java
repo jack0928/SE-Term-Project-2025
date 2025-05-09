@@ -17,6 +17,7 @@ public class PieceMoveController {
     public void movePiece(Piece piece, int steps) {
         if (piece.isFinished()) return;
 
+
         // 만약 piece가 업힌 말이라면 → 리더 기준으로 처리
         if (piece.getGroupLeader() != null) {
             piece = piece.getGroupLeader();
@@ -97,6 +98,7 @@ public class PieceMoveController {
                 // 이미 어느 쪽이든 그룹에 속하면 병합
                 Piece leader1 = piece.getGroupLeaderOrSelf();
                 Piece leader2 = other.getGroupLeaderOrSelf();
+
 
                 if (leader1 == leader2) return; // 이미 같은 그룹이면 무시
 
