@@ -91,18 +91,24 @@ public class PieceMoveController {
     // 말 업기 로직: 같은 플레이어의 다른 말이 해당 칸에 있으면 업기 수행
     public void handleGrouping(Piece piece) {
         Cell cell = piece.getPosition();
+
         for (Piece other : cell.getStackedPieces()) {
-            // 같은 소유자이며 현재 piece가 아닌 경우
             if (other.getOwner().equals(piece.getOwner()) && other != piece) {
-                // 이미 그룹화되어 있는 경우
-                if (!other.getGroupingPieces().contains(piece)) {
-                    other.addGroupingPiece(piece);  // 현재 piece를 other에 포함
-                    piece.setGroupLeader(other);
+                // 이미 어느 쪽이든 그룹에 속하면 병합
+                Piece leader1 = piece.getGroupLeaderOrSelf();
+                Piece leader2 = other.getGroupLeaderOrSelf();
+
+                if (leader1 == leader2) return; // 이미 같은 그룹이면 무시
+
+                // leader2에 leader1을 병합
+                for (Piece p : leader1.getAllGroupedPieces()) {
+                    leader2.addGroupingPiece(p);  // 내부에서 중복 방지
                 }
-                break; // 첫 번째 그룹화된 말과만 연결
+                break;
             }
         }
     }
+
 
     private void finishPiece(Piece piece) {
         List<Piece> group = new ArrayList<>(piece.getGroupingPieces());
