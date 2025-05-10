@@ -15,7 +15,7 @@ class CellTest {
     @BeforeEach
     void setUp() {
         Player.resetCounter();
-        cell = new Cell(0, false, false);
+        cell = new Cell(0);
         player = new Player("Tester");
     }
 

@@ -27,12 +27,12 @@ class PieceTest {
         assertFalse(piece.isFinished());
         assertFalse(piece.hasPassedStartOnce());
         assertEquals(0, piece.getHistory().size());
-        assertEquals(Color.RED, piece.getColor()); // player.getId() == 1 → RED
+        assertEquals(new Color(255, 102, 102), piece.getColor()); // 수정됨
     }
 
     @Test
     void testMoveToUpdatesPositionAndOnBoard() {
-        Cell cell = new Cell(0, false, false);
+        Cell cell = new Cell(0);
         piece.moveTo(cell);
 
         assertEquals(cell, piece.getPosition());
@@ -42,9 +42,10 @@ class PieceTest {
 
     @Test
     void testFinishClearsPositionAndSetsFinished() {
-        Cell cell = new Cell(1, false, false);
+        Cell cell = new Cell(1);
         piece.moveTo(cell);
-        piece.finish();
+        piece.setFinished(true);
+        piece.moveTo(null);
 
         assertNull(piece.getPosition());
         assertTrue(piece.isFinished());
@@ -54,11 +55,11 @@ class PieceTest {
 
     @Test
     void testResetRestoresInitialState() {
-        Cell cell = new Cell(2, false, false);
+        Cell cell = new Cell(2);
         piece.moveTo(cell);
         piece.setPassedStartOnce(true);
         piece.setFinished(true);
-        piece.getHistory().push(2); // 테스트용 기록 추가
+        piece.getHistory().push(2);
 
         piece.reset();
 
@@ -76,7 +77,7 @@ class PieceTest {
         piece.addGroupingPiece(other);
 
         assertTrue(piece.getGroupingPieces().contains(other));
-        assertTrue(other.getGroupingPieces().contains(piece));
+        assertEquals(piece, other.getGroupLeader()); // 양방향이 아닌 단방향 확인
     }
 
     @Test

@@ -17,7 +17,7 @@ public class MockBoard extends Board {
         this.cells = new ArrayList<>();
         // 테스트용으로 5개의 셀만 생성
         for (int i = 0; i < 5; i++) {
-            cells.add(new Cell(i, false, false));
+            cells.add(new Cell(i));
         }
     }
 
