@@ -34,22 +34,27 @@ public class PieceMoveController {
                 if (next != null && next != start) {
                     piece.moveTo(next);
                 }
-                this.isCaptured = handleCapture(piece);
-                handleGrouping(piece);  // grouping 처리
                 checkFinishCondition(piece);
+                if (!piece.isFinished()) {
+                    this.isCaptured = handleCapture(piece);
+                    handleGrouping(piece);  // grouping 처리
+                }
             }
             return;
         }
         if (steps == -1) { // 빽도일 때 (말이 보드에 올라와 있음)
             if(!piece.history.isEmpty()){ // history가 비어있지 않다면 (regular case)
                 piece.moveTo(board.getCells().get(piece.history.pop()));
-                this.isCaptured = handleCapture(piece);
-                handleGrouping(piece); // grouping 처리
+
+                checkFinishCondition(piece);
+                if (!piece.isFinished()) {
+                    this.isCaptured = handleCapture(piece);
+                    handleGrouping(piece); // grouping 처리
+                }
 
                 if (piece.getPosition().getId() == 0) {
                     piece.setPassedStartOnce(true);
                 }
-                checkFinishCondition(piece);
             }
             else { // history가 비어있다면 (왔던만큼 다시 빽도로 돌아가서 출발점에 있는 노드는 history가 비어있음), 그 상태에서 빽도가 또 들어온다면 finish 처리
                 if (piece.getPosition().getId() == 0 && piece.hasPassedStartOnce()) {
@@ -74,9 +79,13 @@ public class PieceMoveController {
                     }
                 }
                 piece.moveTo(next);
-                this.isCaptured = handleCapture(piece);
-                handleGrouping(piece);
                 checkFinishCondition(piece);
+                if (!piece.isFinished()) {
+                    this.isCaptured = handleCapture(piece);
+                    handleGrouping(piece); // grouping 처리
+                }
+
+
 
             }
         }
