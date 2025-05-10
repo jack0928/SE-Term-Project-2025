@@ -42,13 +42,7 @@ public class BoardView extends JPanel{
                 int textHeight = fm.getAscent();
                 g.drawString("출발", p.x - textWidth / 2, p.y + textHeight / 2); // locating "출발" text in the centre of the starting node
             }
-            else { // TODO: 노드 ID를 그리는 부분임. 알고리즘 다 짜고 나서 주석 해제 필수!
-                FontMetrics fm = g.getFontMetrics();
-                String label = String.valueOf(id);
-                int textWidth = fm.stringWidth(label);
-                int textHeight = fm.getAscent();
-                g.drawString(label, p.x - textWidth / 2, p.y + textHeight / 2);
-            }
+
         }
     }
 

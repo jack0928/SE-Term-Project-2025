@@ -132,7 +132,4 @@ public class SquareBoard extends Board {
         return destCell;
     }
 
-
-
-
 }
