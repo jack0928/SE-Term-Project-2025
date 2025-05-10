@@ -80,28 +80,24 @@ public class BoardView extends JPanel{
 
             if (pos == null) continue;
 
-            int offset = 0; // 말이 겹쳐서 그려질 때, 겹쳐진 말의 위치를 조정하기 위한 offset
             for (Piece piece : piecesToDraw) {
                 if (!piece.isOnBoard()) continue;
-
+                if (piece.getGroupLeader() != null) continue;
 
                 g.setColor(piece.getColor());
-                g.fillOval(pos.x - 10 + offset, pos.y - 10, 20, 20);
+                g.fillOval(pos.x - 10, pos.y - 10, 20, 20);
 
-                // 말 번호 라벨
                 g.setColor(Color.BLACK);
                 g.setFont(new Font("Arial", Font.BOLD, 12));
                 String label = String.valueOf(piece.getId() + 1);
-                g.drawString(label, pos.x - 5 + offset, pos.y + 5);
+                g.drawString(label, pos.x - 5, pos.y + 5);
 
-                // 업힌 수 표시 (x2, x3 등)
                 int groupSize = piece.getAllGroupedPieces().size();
                 if (groupSize > 1) {
-                    g.drawString("x" + groupSize, pos.x + 10 + offset, pos.y - 10);
+                    g.drawString("x" + groupSize, pos.x + 10, pos.y - 10);
                 }
-
-                offset += 5;
             }
+
         }
     }
 
@@ -115,6 +111,7 @@ public class BoardView extends JPanel{
         drawNodes(g);
         drawPieces(g);
     }
+
     private void drawCarriedCount(Graphics g, Cell cell, Point pos) {
         int count = 0;
         for (int i=0; i<cell.getStackedPieces().size(); i++) {

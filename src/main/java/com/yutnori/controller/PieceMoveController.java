@@ -133,6 +133,7 @@ public class PieceMoveController {
                 for (Piece p : leader1.getAllGroupedPieces()) {
                     leader2.addGroupingPiece(p);
                 }
+
                 break;
             }
         }
