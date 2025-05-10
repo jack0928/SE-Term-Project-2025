@@ -64,9 +64,10 @@ class PieceMoveControllerTest {
         controller.movePiece(piece, 1); // 0 → 1
         piece.moveTo(board.getCells().get(0)); // 같은 위치에 수동 배치 (충돌 유도)
 
-        boolean captured = controller.handleCapture(piece);
 
-        assertTrue(captured);
+        int captured = controller.handleCapture(piece);
+
+        assertEquals(1, captured);
         assertFalse(enemyPiece.isOnBoard());
         assertNull(enemyPiece.getPosition());
     }

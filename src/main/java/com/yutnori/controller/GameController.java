@@ -121,7 +121,7 @@ public class GameController {
         }
 
         if (totalCaptured > 0) {
-            remainingAdditionalTurns = totalCaptured;
+            remainingAdditionalTurns += totalCaptured;
             String message = (totalCaptured == 1)
                     ? "상대방의 말을 잡았습니다!"
                     : "상대방의 말을 " + totalCaptured + "개 잡았습니다!";
