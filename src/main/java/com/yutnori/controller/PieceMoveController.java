@@ -53,7 +53,7 @@ public class PieceMoveController {
             }
             else { // history가 비어있다면 (왔던만큼 다시 빽도로 돌아가서 출발점에 있는 노드는 history가 비어있음), 그 상태에서 빽도가 또 들어온다면 finish 처리
                 if (piece.getPosition().getId() == 0 && piece.hasPassedStartOnce()) {
-                    finishPiece(piece);
+                    finishPiece(piece); // 업힌 말 포함, 끝내기 처리
                 }
             }
         }

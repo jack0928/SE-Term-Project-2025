@@ -130,11 +130,7 @@ public class GameView {
                 .filter(p -> step != -1 || p.isOnBoard())
                 .filter(p -> p.getGroupLeader() == null)
                 .toList();
-        if (step == -1) { // 빽도일 때
-            movable = movable.stream()
-                    .filter(p -> !p.getHistory().isEmpty())
-                    .toList();
-        }
+
 
         if (movable.isEmpty()) {
             JOptionPane.showMessageDialog(null, (step == -1 ? "보드 위에 말이 없어 빽도 이동이 불가능합니다." : "이동 가능한 말이 없습니다."));
