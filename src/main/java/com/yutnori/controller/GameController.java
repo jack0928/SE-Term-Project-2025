@@ -15,6 +15,7 @@ public class GameController {
     private GameView view;
     private final Queue<Integer> stepQueue = new LinkedList<>();
     private boolean isRollingPhase = true; // true: 윷 던지기, false: 말 이동
+    private int remainingAdditionalTurns = 0; // 잡은 말 수에 따라 추가 턴 수를 저장하는 변수
 
     public GameController() {
         initializeGame(); // default constructor에서 initializeGame() 호출, initializes the game.
@@ -86,7 +87,7 @@ public class GameController {
     }
 
     public void handleTurn() { // 턴을 넘길 수 있는지 확인하고 넘길 수 있다면 턴을 넘기는 method.
-        boolean canTurn = true; // 턴을 넘길 수 있는지 확인하는 boolean 변수.
+        int totalCaptured = 0;
         List<Integer> steps = new ArrayList<>(stepQueue);
         stepQueue.clear();
 
@@ -94,8 +95,8 @@ public class GameController {
 
         while (!steps.isEmpty()) {
             int selectedStep = view.promptStepSelection(current, steps);
-
             Piece selectedPiece = view.promptPieceSelection(current, selectedStep);
+
             if (selectedPiece == null) { // 이동할 말이 없을 경우, 바로 턴 넘기고 return.
                 game.nextPlayer();
                 isRollingPhase = true;
@@ -103,32 +104,42 @@ public class GameController {
                 return;
             }
 
-
-
             PieceMoveController moveController = new PieceMoveController(game.getBoard());
             moveController.movePiece(selectedPiece, selectedStep);
+
+            totalCaptured += moveController.capturedCount; // 잡은 말 수 업데이트
+
 
             view.getBoardView().repaint();
             view.getStatusView().updateFinishedPieces(game.getPlayers());
 
             if (checkAndEndGame(current)) return;
 
-            if (moveController.isCaptured) {
-                JOptionPane.showMessageDialog(null, "상대방의 말을 잡았습니다!");
-                canTurn = false; // 상대방의 말을 잡았다면 턴을 넘길 수 없음.
-            }
-
             view.render(current, game.getPlayers());  // UI 갱신
             steps.remove((Integer) selectedStep);  // step 제거
 
         }
 
-        if (canTurn) { // 턴을 넘길 수 있다면 다음 플레이어로 이동.
-            game.nextPlayer();
+        if (totalCaptured > 0) {
+            remainingAdditionalTurns = totalCaptured;
+            String message = (totalCaptured == 1)
+                    ? "상대방의 말을 잡았습니다!"
+                    : "상대방의 말을 " + totalCaptured + "개 잡았습니다!";
+            JOptionPane.showMessageDialog(null, message);
         }
 
-        isRollingPhase = true;
+        // 잡은 말이 있어서 추가 턴이 있을 경우 → 현재 플레이어에게 윷 던지기 기회 부여
+        if (remainingAdditionalTurns > 0) {
+            JOptionPane.showMessageDialog(null, "윷을 " + remainingAdditionalTurns + "번 더 던질 수 있습니다!");
+            isRollingPhase = true;
+            renderGame();
+            remainingAdditionalTurns--;
+            return;
+        }
 
+        // 턴 넘기기 (잡은 말도 없고 step도 끝났을 때만)
+        game.nextPlayer();
+        isRollingPhase = true;
         renderGame();
 
     }

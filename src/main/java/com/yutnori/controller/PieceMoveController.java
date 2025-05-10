@@ -6,7 +6,7 @@ import java.util.*;
 
 public class PieceMoveController {
     private Board board;
-    public Boolean isCaptured = false;
+    public int capturedCount = 0;
 
 
     public PieceMoveController(Board board) {
@@ -36,7 +36,7 @@ public class PieceMoveController {
                 }
                 checkFinishCondition(piece);
                 if (!piece.isFinished()) {
-                    this.isCaptured = handleCapture(piece);
+                    this.capturedCount = handleCapture(piece);
                     handleGrouping(piece);  // grouping 처리
                 }
             }
@@ -48,7 +48,7 @@ public class PieceMoveController {
 
                 checkFinishCondition(piece);
                 if (!piece.isFinished()) {
-                    this.isCaptured = handleCapture(piece);
+                    this.capturedCount = handleCapture(piece);
                     handleGrouping(piece); // grouping 처리
                 }
 
@@ -81,20 +81,17 @@ public class PieceMoveController {
                 piece.moveTo(next);
                 checkFinishCondition(piece);
                 if (!piece.isFinished()) {
-                    this.isCaptured = handleCapture(piece);
+                    this.capturedCount = handleCapture(piece);
                     handleGrouping(piece); // grouping 처리
                 }
-
-
-
             }
         }
     }
 
     // 말 잡기 로직: 다른 플레이어 말이 있으면 잡고 원위치
-    public Boolean handleCapture(Piece piece) {
+    public int handleCapture(Piece piece) {
         Cell cell = piece.getPosition();
-        boolean captureOccurred = false; // 캡처 여부 플래그
+        int count = 0; // 말을 잡은 횟수
 
         // 같은 셀에 있는 말을 순회하며 적인 말을 찾음
         List<Piece> copiedStack = new ArrayList<>(cell.getStackedPieces()); // ConcurrentModification 방지
@@ -104,11 +101,11 @@ public class PieceMoveController {
                 other.reset(); // 잡힌 말 원위치 처리
                 other.resetGrouping();
                 piece.setGroupLeader(null);
-                captureOccurred = true; // 캡처 발생
+                count++;
             }
         }
 
-        return captureOccurred; // 캡처 여부 반환
+        return count; // 캡처 여부 반환
     }
 
 
