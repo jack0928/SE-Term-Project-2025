@@ -6,7 +6,6 @@ import com.yutnori.model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameView {
@@ -96,10 +95,16 @@ public class GameView {
         return yut.getLastResult();
     }
 
-    public int promptStepSelection(List<Integer> steps) { // 이동할 칸 수 선택
-        if (steps.size() == 1) return steps.get(0);
+    public int promptStepSelection(Player player, List<Integer> steps) {
+        // 말이 위에 하나도 없을 때에는 빽도가 invalid함. 다른 step 이 있을 시 그것이 먼저 사용되어야 함.
+        List<Integer> filteredSteps = steps.stream()
+                .filter(step -> !(step == -1 && player.getPieces().stream().noneMatch(Piece::isOnBoard)))
+                .toList();
 
-        String[] stepOptions = steps.stream()
+        if (filteredSteps.isEmpty()) return steps.get(0); // 다른스텝이 없으면 invalid하기 때문에 자동으로 턴 스킵
+        if (filteredSteps.size() == 1) return filteredSteps.get(0); // 다른 스텝이 하나뿐이면 그걸 사용
+
+        String[] stepOptions = filteredSteps.stream()
                 .map(YutResultView::getResultText)
                 .toArray(String[]::new);
 
@@ -114,9 +119,10 @@ public class GameView {
                 stepOptions[0]
         );
 
-        if (selected == JOptionPane.CLOSED_OPTION) return steps.get(0); // fallback
-        return steps.get(selected);// 선택된 step 반환
+        if (selected == JOptionPane.CLOSED_OPTION) return filteredSteps.get(0);
+        return filteredSteps.get(selected);
     }
+
 
     public Piece promptPieceSelection(Player player, int step) { // 이동할 말 선택
         List<Piece> movable = player.getPieces().stream()
@@ -124,7 +130,11 @@ public class GameView {
                 .filter(p -> step != -1 || p.isOnBoard())
                 .filter(p -> p.getGroupLeader() == null)
                 .toList();
-
+        if (step == -1) { // 빽도일 때
+            movable = movable.stream()
+                    .filter(p -> !p.getHistory().isEmpty())
+                    .toList();
+        }
 
         if (movable.isEmpty()) {
             JOptionPane.showMessageDialog(null, (step == -1 ? "보드 위에 말이 없어 빽도 이동이 불가능합니다." : "이동 가능한 말이 없습니다."));

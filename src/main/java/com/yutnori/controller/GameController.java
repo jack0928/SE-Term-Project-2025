@@ -93,7 +93,7 @@ public class GameController {
         Player current = game.getCurrentPlayer();
 
         while (!steps.isEmpty()) {
-            int selectedStep = view.promptStepSelection(steps);
+            int selectedStep = view.promptStepSelection(current, steps);
 
             Piece selectedPiece = view.promptPieceSelection(current, selectedStep);
             if (selectedPiece == null) { // 이동할 말이 없을 경우, 바로 턴 넘기고 return.
