@@ -67,10 +67,7 @@ public class BoardView extends JPanel{
         for (Cell cell : board.getCells()) {
             int id = cell.getId();
 
-            // 중앙 셀(27)은 UI에서 생략하고 22에서만 그림
-            if (id == 27) continue;
-
-            // 중앙 셀(22)에는 22와 27에 있는 말을 모두 수집해서 그림
+            // 22번 셀은 22 + 27의 말들을 모두 모아서 그린다
             List<Piece> piecesToDraw = new ArrayList<>(cell.getStackedPieces());
             if (id == 22) {
                 Cell altCenter = board.getCells().get(27);
@@ -78,31 +75,38 @@ public class BoardView extends JPanel{
                     piecesToDraw.addAll(altCenter.getStackedPieces());
                 }
             }
-            Point pos = board.getNodePosition(cell.getId());
+
+            // 위치 계산 (22와 27 모두 같은 위치에 그림)
+            Point pos = board.getNodePosition((id == 27) ? 22 : id);
             if (pos == null) continue;
 
             int offset = 0;
-            for (Piece piece : cell.getStackedPieces()) {
-                if (!piece.isOnBoard()) continue; // 보드에 올라가 있지 않은 말은 그리지 않음
+            for (Piece piece : piecesToDraw) {
+                if (!piece.isOnBoard()) continue;
+
+                // ✅ 리더만 그림 (업힌 말은 생략)
+                if (piece.getGroupLeader() != null) continue;
 
                 g.setColor(piece.getColor());
                 g.fillOval(pos.x - 10 + offset, pos.y - 10, 20, 20);
-                // 숫자 라벨 추가 (말1, 말2 labeling)
+
+                // 말 번호 라벨
                 g.setColor(Color.BLACK);
                 g.setFont(new Font("Arial", Font.BOLD, 12));
-                String label = String.valueOf(piece.getId() + 1); // 말 번호: 1부터 시작
+                String label = String.valueOf(piece.getId() + 1);
                 g.drawString(label, pos.x - 5 + offset, pos.y + 5);
+
+                // ✅ 업힌 수 표시 (x2, x3 등)
+                int groupSize = piece.getAllGroupedPieces().size();
+                if (groupSize > 1) {
+                    g.drawString("x" + groupSize, pos.x + 10 + offset, pos.y - 10);
+                }
 
                 offset += 5;
             }
-
-
-
-            // 말이 쌓여있는 경우, 쌓인 개수를 표시
-            drawCarriedCount(g, cell, pos);
-
         }
     }
+
 
     // 그리는 function을 override하여 JPanel의 기본 그리기 기능을 사용함.
     // 위치 조정은 하위 class에서 수행 (drawLines, drawNodes function 호출)
