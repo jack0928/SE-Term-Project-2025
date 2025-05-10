@@ -1,9 +1,6 @@
 package com.yutnori.view;
 
-import com.yutnori.model.Board;
-import com.yutnori.model.Cell;
-import com.yutnori.model.Piece;
-import com.yutnori.model.Player;
+import com.yutnori.model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,25 +64,26 @@ public class BoardView extends JPanel{
         for (Cell cell : board.getCells()) {
             int id = cell.getId();
 
-            // 22번 셀은 22 + 27의 말들을 모두 모아서 그린다
+            // 22번 셀은 22 + 27의 말들을 모두 모아서 그린다 (SquareBoard에서만)
             List<Piece> piecesToDraw = new ArrayList<>(cell.getStackedPieces());
-            if (id == 22) {
+            if (id == 22 && board instanceof SquareBoard) {
                 Cell altCenter = board.getCells().get(27);
                 if (altCenter != null) {
                     piecesToDraw.addAll(altCenter.getStackedPieces());
                 }
             }
 
-            // 위치 계산 (22와 27 모두 같은 위치에 그림)
-            Point pos = board.getNodePosition((id == 27) ? 22 : id);
+            // 위치 계산 (22와 27 모두 같은 위치에 그림) (SquareBoard에서만)
+            Point pos = (id == 27 && board instanceof SquareBoard)
+                    ? board.getNodePosition(22)
+                    : board.getNodePosition(id);
+
             if (pos == null) continue;
 
-            int offset = 0;
+            int offset = 0; // 말이 겹쳐서 그려질 때, 겹쳐진 말의 위치를 조정하기 위한 offset
             for (Piece piece : piecesToDraw) {
                 if (!piece.isOnBoard()) continue;
 
-                // ✅ 리더만 그림 (업힌 말은 생략)
-                if (piece.getGroupLeader() != null) continue;
 
                 g.setColor(piece.getColor());
                 g.fillOval(pos.x - 10 + offset, pos.y - 10, 20, 20);
@@ -96,7 +94,7 @@ public class BoardView extends JPanel{
                 String label = String.valueOf(piece.getId() + 1);
                 g.drawString(label, pos.x - 5 + offset, pos.y + 5);
 
-                // ✅ 업힌 수 표시 (x2, x3 등)
+                // 업힌 수 표시 (x2, x3 등)
                 int groupSize = piece.getAllGroupedPieces().size();
                 if (groupSize > 1) {
                     g.drawString("x" + groupSize, pos.x + 10 + offset, pos.y - 10);
