@@ -4,9 +4,8 @@ import com.yutnori.model.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class BoardView extends JPanel{
     private Board board;
@@ -61,10 +60,12 @@ public class BoardView extends JPanel{
     }
 
     protected void drawPieces(Graphics g) {
+        Set<Piece> rendered = new HashSet<>();
+
         for (Cell cell : board.getCells()) {
             int id = cell.getId();
 
-            // 22번 셀은 22 + 27의 말들을 모두 모아서 그린다 (SquareBoard에서만)
+            // 중앙 셀 병합 처리 (SquareBoard)
             List<Piece> piecesToDraw = new ArrayList<>(cell.getStackedPieces());
             if (id == 22 && board instanceof SquareBoard) {
                 Cell altCenter = board.getCells().get(27);
@@ -73,37 +74,45 @@ public class BoardView extends JPanel{
                 }
             }
 
-            // 위치 계산 (22와 27 모두 같은 위치에 그림) (SquareBoard에서만)
+            // 중앙 좌표 통일
             Point pos = (id == 27 && board instanceof SquareBoard)
                     ? board.getNodePosition(22)
                     : board.getNodePosition(id);
 
             if (pos == null) continue;
 
-            int offset = 0; // 말이 겹쳐서 그려질 때, 겹쳐진 말의 위치를 조정하기 위한 offset
+            // 그룹 리더 기준으로 하나만 처리하되, 업힌 말들도 순회하면서 모두 겹쳐 그림
+            Set<Piece> renderedLeaders = new HashSet<>();
             for (Piece piece : piecesToDraw) {
                 if (!piece.isOnBoard()) continue;
 
+                Piece leader = piece.getGroupLeaderOrSelf();
+                if (renderedLeaders.contains(leader)) continue; // 같은 그룹은 1번만 처리
 
-                g.setColor(piece.getColor());
-                g.fillOval(pos.x - 10 + offset, pos.y - 10, 20, 20);
+                int offset = 0;
+                for (Piece p : leader.getAllGroupedPieces()) {
+                    g.setColor(p.getColor());
+                    g.fillOval(pos.x - 10 + offset, pos.y - 10, 20, 20);
 
-                // 말 번호 라벨
-                g.setColor(Color.BLACK);
-                g.setFont(new Font("Arial", Font.BOLD, 12));
-                String label = String.valueOf(piece.getId() + 1);
-                g.drawString(label, pos.x - 5 + offset, pos.y + 5);
+                    g.setColor(Color.BLACK);
+                    g.setFont(new Font("Arial", Font.BOLD, 12));
+                    String label = String.valueOf(p.getId() + 1);
+                    g.drawString(label, pos.x - 5 + offset, pos.y + 5);
 
-                // 업힌 수 표시 (x2, x3 등)
-                int groupSize = piece.getAllGroupedPieces().size();
-                if (groupSize > 1) {
-                    g.drawString("x" + groupSize, pos.x + 10 + offset, pos.y - 10);
+                    offset += 5;
                 }
 
-                offset += 5;
+                // 그룹 수 텍스트 (xN)
+                if (leader.getAllGroupedPieces().size() > 1) {
+                    g.drawString("x" + leader.getAllGroupedPieces().size(),
+                            pos.x + 10 + offset, pos.y - 10);
+                }
+
+                renderedLeaders.add(leader);
             }
         }
     }
+
 
 
     // 그리는 function을 override하여 JPanel의 기본 그리기 기능을 사용함.
