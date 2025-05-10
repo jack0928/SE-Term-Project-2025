@@ -108,8 +108,10 @@ public class PieceMoveController {
         Cell cell = piece.getPosition();
         List<Piece> candidates = new ArrayList<>(cell.getStackedPieces());
 
-        // 중앙 셀이라면 반대편 중앙 셀도 함께 조사
-        if (cell.getId() == 22 || cell.getId() == 27) {
+        // 중앙 셀이라면 반대편 중앙 셀도 함께 조사 (SquareBoard에서만. 다른 보드는 해당 없음)
+        // SquareBoard의 경우, 22번 셀과 27번 셀은 같은 위치에 그려짐.
+        // 그러므로, 업힌 말이 22번 셀에 있는 경우, 27번 셀의 말도 함께 업어야 함.
+        if ((cell.getId() == 22 || cell.getId() == 27) && board instanceof SquareBoard) {
             int otherId = (cell.getId() == 22) ? 27 : 22;
             Cell otherCenter = board.getCells().get(otherId);
             candidates.addAll(otherCenter.getStackedPieces());
