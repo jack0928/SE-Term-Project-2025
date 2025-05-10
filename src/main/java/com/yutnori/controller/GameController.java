@@ -120,6 +120,7 @@ public class GameController {
 
             view.render(current, game.getPlayers());  // UI 갱신
             steps.remove((Integer) selectedStep);  // step 제거
+
         }
 
         if (canTurn) { // 턴을 넘길 수 있다면 다음 플레이어로 이동.
