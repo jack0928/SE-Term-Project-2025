@@ -61,6 +61,18 @@ public class PieceMoveController {
             Cell current = piece.getPosition();
             Cell next = board.getDestinationCell(current, steps, board, piece);
             if (next != null) {
+                if (next.getId() == 0) { // 출발점에 도착했을 때
+                    piece.setPassedStartOnce(true);
+                }
+                if (next.getId() == 1 || next.getId() == 2 || next.getId() == 3 || next.getId() ==4){ // 1,2,3,4번 칸에 도착했을 때
+                    int zeroCount = getZeroCount(piece); // 해당 말이 출발점을 몇번 밟았는지 history에서 추적.
+
+                    if (zeroCount > 1) { // zeroCount가 1보다 크다면, 출발점을 두번 이상 밟았다는 의미 == 한 바퀴 이상 돌았다는 의미.
+                        piece.setPassedStartOnce(true);
+                        checkFinishCondition(piece); // 업힌 말 포함, 끝내기 처리
+                        return;
+                    }
+                }
                 piece.moveTo(next);
                 this.isCaptured = handleCapture(piece);
                 handleGrouping(piece);
@@ -139,15 +151,21 @@ public class PieceMoveController {
             finishPiece(piece); // 업힌 말 포함, 끝내기 처리
         }
 
+        int zeroCount = getZeroCount(piece);
+        if (zeroCount > 1) { // zeroCount가 1보다 크다면, 출발점을 두번 이상 밟았다는 의미 == 한 바퀴 이상 돌았다는 의미.
+            finishPiece(piece); // 업힌 말 포함, 끝내기 처리
+        }
+    }
+
+    private int getZeroCount(Piece piece) { // 해당 말이 (parameter로 들어온 piece) 출발점을 몇번 밟았는지 확인하는 메소드
+        Stack<Integer> history = piece.getHistory();
         int zeroCount = 0; // history 내에서 0의 갯수 (출발점을 몇번 밟았는가?)
         for (int id : history) {
             if (id == 0) {
                 zeroCount++; // 출발점을 한번 밟을 때마다 카운트가 증가
             }
         }
-        if (zeroCount > 1) { // zeroCount가 1보다 크다면, 출발점을 두번 이상 밟았다는 의미 == 한 바퀴 이상 돌았다는 의미.
-            finishPiece(piece); // 업힌 말 포함, 끝내기 처리
-        }
+        return zeroCount;
     }
 
 }

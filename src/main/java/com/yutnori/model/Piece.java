@@ -95,10 +95,10 @@ public class Piece {
 
     public Color getColor() { // to get the color of the piece (Player1은 자동으로 빨간색, Player2는 하늘색, Player3은 노란색, Player4는 초록색)
         return switch (owner.getId()) {
-            case 1 -> Color.RED;
+            case 1 -> new Color(255, 102, 102);
             case 2 -> new Color(135, 206, 250); // Sky Blue Colour. 원래는 파란색이었으나, Color.BLUE 색상은 말 위 숫자의 검은색과 너무 겹쳐서, 가독성을 위해 색을 바꿈.
-            case 3 -> Color.YELLOW;
-            case 4 -> Color.GREEN;
+            case 3 -> 	new Color(218, 165, 32);
+            case 4 -> new Color(34, 139, 34);
             default -> Color.GRAY;
         };
     }
