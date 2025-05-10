@@ -18,6 +18,7 @@ public class Cell {
     }
 
 
+
     public void addPiece(Piece piece) { // Cell 위에 Piece를 추가하는 메소드
         if (!piecesOnCell.contains(piece)) {
             piecesOnCell.add(piece);
