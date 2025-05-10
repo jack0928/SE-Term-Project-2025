@@ -121,14 +121,14 @@ public class GameController {
         }
 
         if (totalCaptured > 0) {
-            remainingAdditionalTurns = totalCaptured;
+            remainingAdditionalTurns += totalCaptured;
             String message = (totalCaptured == 1)
                     ? "상대방의 말을 잡았습니다!"
                     : "상대방의 말을 " + totalCaptured + "개 잡았습니다!";
             JOptionPane.showMessageDialog(null, message);
         }
 
-        // 잡은 말이 있어서 추가 턴이 있을 경우 → 현재 플레이어에게 윷 던지기 기회 부여
+        // 잡은 말이 있어서 추가 턴이 있을 경우,  현재 플레이어에게 윷 던지기 기회 부여
         if (remainingAdditionalTurns > 0) {
             JOptionPane.showMessageDialog(null, "윷을 " + remainingAdditionalTurns + "번 더 던질 수 있습니다!");
             isRollingPhase = true;
