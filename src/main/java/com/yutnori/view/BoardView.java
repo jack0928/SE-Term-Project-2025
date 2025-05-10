@@ -84,8 +84,6 @@ public class BoardView extends JPanel{
             for (Piece piece : piecesToDraw) {
                 if (!piece.isOnBoard()) continue;
 
-                // ✅ 리더만 그림 (업힌 말은 생략)
-                if (piece.getGroupLeader() != null) continue;
 
                 g.setColor(piece.getColor());
                 g.fillOval(pos.x - 10 + offset, pos.y - 10, 20, 20);
@@ -96,7 +94,7 @@ public class BoardView extends JPanel{
                 String label = String.valueOf(piece.getId() + 1);
                 g.drawString(label, pos.x - 5 + offset, pos.y + 5);
 
-                // ✅ 업힌 수 표시 (x2, x3 등)
+                // 업힌 수 표시 (x2, x3 등)
                 int groupSize = piece.getAllGroupedPieces().size();
                 if (groupSize > 1) {
                     g.drawString("x" + groupSize, pos.x + 10 + offset, pos.y - 10);
