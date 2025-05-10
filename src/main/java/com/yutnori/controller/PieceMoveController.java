@@ -41,29 +41,30 @@ public class PieceMoveController {
             return;
         }
         if (steps == -1) { // 빽도일 때 (말이 보드에 올라와 있음)
-            if(!piece.history.isEmpty()){
+            if(!piece.history.isEmpty()){ // history가 비어있지 않다면 (regular case)
                 piece.moveTo(board.getCells().get(piece.history.pop()));
                 this.isCaptured = handleCapture(piece);
                 handleGrouping(piece); // grouping 처리
+
+                if (piece.getPosition().getId() == 0) {
+                    piece.setPassedStartOnce(true);
+                }
                 checkFinishCondition(piece);
+            }
+            else { // history가 비어있다면 (왔던만큼 다시 빽도로 돌아가서 출발점에 있는 노드는 history가 비어있음), 그 상태에서 빽도가 또 들어온다면 finish 처리
+                if (piece.getPosition().getId() == 0 && piece.hasPassedStartOnce()) {
+                    finishPiece(piece);
+                }
             }
         }
         else { // Regular case (말이 보드에 올라와 있고, 빽도가 아님.)
             Cell current = piece.getPosition();
             Cell next = board.getDestinationCell(current, steps, board, piece);
             if (next != null) {
-                if (piece.isOnBoard() && next.getId() == 0 && piece.hasPassedStartOnce()) {
-                    finishPiece(piece);
-                } else {
-                    if (piece.isOnBoard() && piece.getPosition().getId() != 0 && next.getId() == 0) {
-                        piece.setPassedStartOnce(true); // 한 바퀴 돌았음을 기록
-                    }
-                    piece.moveTo(next);
-                    this.isCaptured = handleCapture(piece);
-                    handleGrouping(piece);
-                    checkFinishCondition(piece);
-                }
-
+                piece.moveTo(next);
+                this.isCaptured = handleCapture(piece);
+                handleGrouping(piece);
+                checkFinishCondition(piece);
             }
         }
     }
