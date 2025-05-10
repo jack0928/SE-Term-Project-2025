@@ -77,6 +77,7 @@ public class PieceMoveController {
                 this.isCaptured = handleCapture(piece);
                 handleGrouping(piece);
                 checkFinishCondition(piece);
+
             }
         }
     }
@@ -105,19 +106,24 @@ public class PieceMoveController {
     // 말 업기 로직: 같은 플레이어의 다른 말이 해당 칸에 있으면 업기 수행
     public void handleGrouping(Piece piece) {
         Cell cell = piece.getPosition();
+        List<Piece> candidates = new ArrayList<>(cell.getStackedPieces());
 
-        for (Piece other : cell.getStackedPieces()) {
+        // 중앙 셀이라면 반대편 중앙 셀도 함께 조사
+        if (cell.getId() == 22 || cell.getId() == 27) {
+            int otherId = (cell.getId() == 22) ? 27 : 22;
+            Cell otherCenter = board.getCells().get(otherId);
+            candidates.addAll(otherCenter.getStackedPieces());
+        }
+
+        for (Piece other : candidates) {
             if (other.getOwner().equals(piece.getOwner()) && other != piece) {
-                // 이미 어느 쪽이든 그룹에 속하면 병합
                 Piece leader1 = piece.getGroupLeaderOrSelf();
                 Piece leader2 = other.getGroupLeaderOrSelf();
 
+                if (leader1 == leader2) return;
 
-                if (leader1 == leader2) return; // 이미 같은 그룹이면 무시
-
-                // leader2에 leader1을 병합
                 for (Piece p : leader1.getAllGroupedPieces()) {
-                    leader2.addGroupingPiece(p);  // 내부에서 중복 방지
+                    leader2.addGroupingPiece(p);
                 }
                 break;
             }
