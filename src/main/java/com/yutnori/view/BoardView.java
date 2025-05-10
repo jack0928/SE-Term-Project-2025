@@ -7,6 +7,7 @@ import com.yutnori.model.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +71,19 @@ public class BoardView extends JPanel{
 
     protected void drawPieces(Graphics g) {
         for (Cell cell : board.getCells()) {
+            int id = cell.getId();
+
+            // 중앙 셀(27)은 UI에서 생략하고 22에서만 그림
+            if (id == 27) continue;
+
+            // 중앙 셀(22)에는 22와 27에 있는 말을 모두 수집해서 그림
+            List<Piece> piecesToDraw = new ArrayList<>(cell.getStackedPieces());
+            if (id == 22) {
+                Cell altCenter = board.getCells().get(27);
+                if (altCenter != null) {
+                    piecesToDraw.addAll(altCenter.getStackedPieces());
+                }
+            }
             Point pos = board.getNodePosition(cell.getId());
             if (pos == null) continue;
 
