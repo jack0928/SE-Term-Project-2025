@@ -11,19 +11,19 @@ import com.yutnori.model.*;
 import java.awt.Point;
 import java.util.*;
 
-public class FXBoardView extends Pane {
+public class FXBoardView extends Pane { // JPanel 대신 JavaFX의 Pane을 사용
     private final Canvas canvas;
     private final Board board;
 
     public FXBoardView(Board board) {
         this.board = board;
-        this.canvas = new Canvas(800, 800); // layout size
+        this.canvas = new Canvas(800, 800); // BoardView의 크기에 대응됨.
         getChildren().add(canvas);
-        render();
+        render(); // BoardView에서 painComponent로 했던 것과 달리, render()로 수동 호출.
     }
 
     public void render() {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+        GraphicsContext gc = canvas.getGraphicsContext2D(); // JavaFX의 GraphicsContext 사용
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         drawLines(gc);
@@ -32,7 +32,7 @@ public class FXBoardView extends Pane {
     }
 
     private void drawLines(GraphicsContext gc) {
-        gc.setStroke(Color.BLACK);
+        gc.setStroke(Color.BLACK); // setColor에 대응되는 JavaFX의 setStroke 사용
 
         List<int[]>[] allPaths = new List[]{board.getOuterPath(), board.getInnerPath()};
         for (List<int[]> path : allPaths) {
@@ -40,7 +40,7 @@ public class FXBoardView extends Pane {
                 Point p1 = board.getNodePosition(pair[0]);
                 Point p2 = board.getNodePosition(pair[1]);
                 if (p1 != null && p2 != null) {
-                    gc.strokeLine(p1.x, p1.y, p2.x, p2.y);
+                    gc.strokeLine(p1.x, p1.y, p2.x, p2.y); // g.drawLine -> gc.strokeLine으로 대응
                 }
             }
         }
@@ -55,16 +55,16 @@ public class FXBoardView extends Pane {
             boolean isCentre = board.isCentre(id);
             int radius = isCorner || isCentre ? Board.getCornerRadius() : Board.getRadius();
 
-            gc.setFill(Color.WHITE);
+            gc.setFill(Color.WHITE); // g.setColor(Color.WHITE) -> gc.setFill(Color.WHITE)으로 대응
             gc.fillOval(p.x - radius / 2, p.y - radius / 2, radius, radius);
-            gc.setStroke(Color.BLACK);
+            gc.setStroke(Color.BLACK); // g.setColor(Color.BLACK) -> gc.setStroke(Color.BLACK)으로 대응
             gc.strokeOval(p.x - radius / 2, p.y - radius / 2, radius, radius);
 
             if (isCorner || isCentre) {
                 gc.strokeOval(p.x - radius / 2 + 3, p.y - radius / 2 + 3, radius - 6, radius - 6);
             }
 
-            if (id == 0) {
+            if (id == 0) { // Swing에서는 FontMetrics와 g.drawString을 사용하는 것과 달리, JavaFx에서는 직접적으로 Font를 설정하고 위치 조정
                 gc.setFont(Font.font("Arial", 12));
                 gc.setFill(Color.BLACK);
                 gc.fillText("출발", p.x - 12, p.y + 5);
@@ -114,11 +114,11 @@ public class FXBoardView extends Pane {
 
                 int offset = 0;
                 for (Piece p : leader.getAllGroupedPieces()) {
-                    java.awt.Color awtColor = p.getColor();
-                    javafx.scene.paint.Color fxColor = javafx.scene.paint.Color.rgb(
+                    java.awt.Color awtColor = p.getColor(); // piece.getColor() returns java.awt.Color
+                    javafx.scene.paint.Color fxColor = javafx.scene.paint.Color.rgb( // convert java.awt.Color to javafx.scene.paint.Color
                             awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue());
 
-                    gc.setFill(fxColor);
+                    gc.setFill(fxColor); // set the fill color in javafx.scene.paint.Color (differ from java.awt.Color)
                     gc.fillOval(pos.x - 10 + offset, pos.y - 10, 20, 20);
 
                     gc.setFill(Color.BLACK);
