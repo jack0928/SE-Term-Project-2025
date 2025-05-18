@@ -26,7 +26,7 @@ javafx {
 }
 
 application {
-    mainClass = 'com.yutnori.FXview.FXYutTest'  // 실제 main() 클래스 경로
+    mainClass = 'com.yutnori.FXview.TestFXPlayerStatusView'  // 실제 main() 클래스 경로
 }
 test {
     useJUnitPlatform()
