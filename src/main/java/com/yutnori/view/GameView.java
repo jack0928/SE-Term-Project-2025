@@ -1,14 +1,16 @@
 package com.yutnori.view;
 
-import com.yutnori.controller.*;
+import com.yutnori.controller.YutController;
 import com.yutnori.model.*;
+import com.yutnori.viewInterface.GameViewInterface;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
-public class GameView {
+public class GameView implements GameViewInterface {
     private final JFrame frame;
     private final JPanel mainPanel;
     private final JLabel turnLabel;
@@ -19,8 +21,13 @@ public class GameView {
     private final Yut yut;
     private final YutController yutController;
 
-    public GameView(Board board, List<Player> players) {
-        // 모델 연결
+    private Board board;
+    private List<Player> players;
+
+    public GameView() {
+        promptAndInitialize(); // 내부에서 prompt 처리
+
+        // 모델 생성
         this.yut = new Yut();
         this.resultView = new YutResultView();
         this.yutController = new YutController(yut, resultView);
@@ -29,7 +36,7 @@ public class GameView {
         this.turnLabel = new JLabel();
         this.turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // 프레임 및 패널 구성
+
         this.frame = new JFrame("Yut Game");
         this.mainPanel = new JPanel(new BorderLayout());
 
@@ -41,29 +48,70 @@ public class GameView {
         rightPanel.add(statusView);
         statusView.render(players);
 
-        // 보드뷰 및 상태뷰 추가
         mainPanel.add(boardView, BorderLayout.CENTER);
         mainPanel.add(rightPanel, BorderLayout.EAST);
 
-        // 프레임 설정
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(mainPanel);
         frame.pack();
         frame.setVisible(true);
     }
 
-    public JFrame getFrame() { // 프레임 반환
-        return this.frame;
+    private void promptAndInitialize() {
+        // 1. 보드 형태 선택
+        String[] boardOptions = {"Square", "Pentagon", "Hexagon"};
+        String selectedBoard = (String) JOptionPane.showInputDialog(
+                null, "보드 형태를 선택하세요:", "보드 선택",
+                JOptionPane.PLAIN_MESSAGE, null, boardOptions, boardOptions[0]);
+
+        if (selectedBoard == null) System.exit(0); // 혹은 예외 처리
+
+        this.board = switch (selectedBoard) {
+            case "Pentagon" -> new PentagonBoard();
+            case "Hexagon" -> new HexagonBoard();
+            default -> new SquareBoard();
+        };
+
+        // 2. 플레이어 수 및 말 개수 선택
+        Integer[] playerCounts = {2, 3, 4};
+        Integer selectedPlayerCount = (Integer) JOptionPane.showInputDialog(
+                null, "플레이어 수를 선택하세요:", "플레이어 수 선택",
+                JOptionPane.PLAIN_MESSAGE, null, playerCounts, playerCounts[0]);
+        if (selectedPlayerCount == null) System.exit(0);
+
+        Integer[] pieceCounts = {2, 3, 4, 5};
+        Integer selectedPieceCount = (Integer) JOptionPane.showInputDialog(
+                null, "플레이어당 말 개수를 선택하세요:", "말 개수 선택",
+                JOptionPane.PLAIN_MESSAGE, null, pieceCounts, pieceCounts[0]);
+        if (selectedPieceCount == null) System.exit(0);
+
+        // 플레이어 및 말 생성
+        this.players = new ArrayList<>();
+        for (int i = 1; i <= selectedPlayerCount; i++) {
+            Player player = new Player("Player" + i);
+            for (int j = 0; j < selectedPieceCount; j++) {
+                player.addPiece(new Piece(j, player));
+            }
+            players.add(player);
+        }
     }
 
+    // getters for board and players if needed externally
+    public Board getBoard() { return board; }
+    public List<Player> getPlayers() { return players; }
+
+
+    @Override
     public BoardView getBoardView() { // 보드뷰 반환
         return this.boardView;
     }
 
+    @Override
     public PlayerStatusView getStatusView() { // 플레이어 상태뷰 반환
         return this.statusView;
     }
 
+    @Override
     public void render(Player currentPlayer, List<Player> allPlayers) { // 현재 턴 플레이어 및 전체 플레이어 상태 업데이트 (rendering)
         turnLabel.setText("현재 턴: " + currentPlayer.getName());
         turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -82,19 +130,23 @@ public class GameView {
         statusView.updateFinishedPieces(allPlayers);
     }
 
+    @Override
     public void setThrowRandomButtonListener(ActionListener listener) { // 랜덤 윷 던지기 버튼
         resultView.getThrowRandomButton().addActionListener(listener);
     }
 
+    @Override
     public void setSelectButtonListener(ActionListener listener) { // 선택된 윷 던지기 버튼
         resultView.getSelectYutButton().addActionListener(listener);
     }
 
+    @Override
     public int throwYut(boolean isRandom) {
         yutController.performThrow(isRandom);
         return yut.getLastResult();
     }
 
+    @Override
     public int promptStepSelection(Player player, List<Integer> steps) {
         // 말이 위에 하나도 없을 때에는 빽도가 invalid함. 다른 step 이 있을 시 그것이 먼저 사용되어야 함.
         List<Integer> filteredSteps = steps.stream()
@@ -123,7 +175,7 @@ public class GameView {
         return filteredSteps.get(selected);
     }
 
-
+    @Override
     public Piece promptPieceSelection(Player player, int step) { // 이동할 말 선택
         List<Piece> movable = player.getPieces().stream()
                 .filter(p -> !p.isFinished())
@@ -172,5 +224,29 @@ public class GameView {
 
         return (selected == JOptionPane.CLOSED_OPTION) ? null : movable.get(selected);
     }
+
+    @Override
+    public void showMessage(String msg) {
+        JOptionPane.showMessageDialog(null, msg);
+    }
+
+    @Override
+    public boolean askRestart(String winnerName) {
+        int choice = JOptionPane.showOptionDialog(null,
+                winnerName + "님이 승리했습니다!\n게임을 다시 시작하시겠습니까?",
+                "게임 종료",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                new String[]{"재시작", "종료"},
+                "재시작");
+        return choice == JOptionPane.YES_OPTION;
+    }
+
+    @Override
+    public void dispose() {
+        frame.dispose();
+    }
+
 
 }

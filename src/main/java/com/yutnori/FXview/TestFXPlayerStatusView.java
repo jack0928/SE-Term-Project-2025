@@ -30,7 +30,7 @@ public class TestFXPlayerStatusView extends Application {
         List<Player> players = Arrays.asList(player1, player2);
 
         // 뷰 생성 및 초기 렌더링
-        FXPlayerStatusView statusView = new FXPlayerStatusView();
+        FXPlayerStatusView statusView = new FXPlayerStatusView(players);
         statusView.render(players);
 
         // 씬 설정

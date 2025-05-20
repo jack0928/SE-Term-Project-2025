@@ -2,13 +2,14 @@ package com.yutnori.controller;
 
 import com.yutnori.model.Yut;
 import com.yutnori.view.YutResultView;
+import com.yutnori.viewInterface.YutResultViewInterface;
 
 public class YutController {
     private final Yut yut;
-    private final YutResultView view;
+    private final YutResultViewInterface view;
 
     // Constructor
-    public YutController(Yut yut, YutResultView view) {
+    public YutController(Yut yut, YutResultViewInterface view) {
         this.yut = yut;
         this.view = view;
 

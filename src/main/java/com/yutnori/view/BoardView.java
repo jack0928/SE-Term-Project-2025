@@ -1,13 +1,14 @@
 package com.yutnori.view;
 
 import com.yutnori.model.*;
+import com.yutnori.viewInterface.BoardViewInterface;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class BoardView extends JPanel{
+public class BoardView extends JPanel implements BoardViewInterface {
     private Board board;
     public BoardView(Board board) {
         this.board = board;
@@ -136,5 +137,8 @@ public class BoardView extends JPanel{
         }
     }
 
-
+    @Override
+    public void repaint() {
+        super.repaint();
+    }
 }

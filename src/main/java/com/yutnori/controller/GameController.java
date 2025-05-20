@@ -1,8 +1,12 @@
 package com.yutnori.controller;
 
+import com.yutnori.FXview.FXGameView;
 import com.yutnori.YutnoriApplication;
+import com.yutnori.YutnoriFXApplication;
 import com.yutnori.model.*;
 import com.yutnori.view.GameView;
+import com.yutnori.viewInterface.GameViewInterface;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -12,59 +16,27 @@ import java.util.LinkedList;
 
 public class GameController {
     private Game game;
-    private GameView view;
+    private GameViewInterface view;
     private final Queue<Integer> stepQueue = new LinkedList<>();
     private boolean isRollingPhase = true; // true: 윷 던지기, false: 말 이동
     private int remainingAdditionalTurns = 0; // 잡은 말 수에 따라 추가 턴 수를 저장하는 변수
 
-    public GameController() {
-        initializeGame(); // default constructor에서 initializeGame() 호출, initializes the game.
+    public GameController(GameViewInterface view) {
+        this.view = view;
+        initializeGame(view); // default constructor에서 initializeGame() 호출, initializes the game.
     }
 
-    public void initializeGame() {
-        // 1. 사용자 입력
-        String[] boardOptions = {"Square", "Pentagon", "Hexagon"};
-        String selectedBoard = (String) JOptionPane.showInputDialog(
-                null, "보드 형태를 선택하세요:", "보드 선택",
-                JOptionPane.PLAIN_MESSAGE, null, boardOptions, boardOptions[0]);
-        if (selectedBoard == null) return;
+    public void initializeGame(GameViewInterface view) {
+        // 1. user input (View에게 일임)
 
-        Board board = switch (selectedBoard) {
-            case "Pentagon" -> new PentagonBoard();
-            case "Hexagon" -> new HexagonBoard();
-            default -> new SquareBoard();
-        };
+        Board board = view.getBoard();
+        List<Player> players = view.getPlayers();
+        int pieceCount = players.get(0).getPieces().size();
 
-        Integer[] playerCounts = {2, 3, 4};
-        Integer selectedPlayerCount = (Integer) JOptionPane.showInputDialog(
-                null, "플레이어 수를 선택하세요:", "플레이어 수 선택",
-                JOptionPane.PLAIN_MESSAGE, null, playerCounts, playerCounts[0]);
-        if (selectedPlayerCount == null) return;
-
-        Integer[] pieceCounts = {2, 3, 4, 5};
-        Integer selectedPieceCount = (Integer) JOptionPane.showInputDialog(
-                null, "플레이어당 말 개수를 선택하세요:", "말 개수 선택",
-                JOptionPane.PLAIN_MESSAGE, null, pieceCounts, pieceCounts[0]);
-        if (selectedPieceCount == null) return;
-
-        // 2. 플레이어 및 말 생성
-        List<Player> players = new ArrayList<>();
-        for (int i = 1; i <= selectedPlayerCount; i++) {
-            Player player = new Player("Player" + i);
-            for (int j = 0; j < selectedPieceCount; j++) {
-                player.addPiece(new Piece(j, player));
-            }
-            players.add(player);
-        }
-
-        // 3. 모델/뷰 생성 및 저장
-        this.game = new Game(players, board, selectedPieceCount);
-        this.view = new GameView(board, players);
-
-        // 4. 게임 시작
+        this.game = new Game(players, board, pieceCount);
         startGame();
-    }
 
+    }
 
     public void startGame() { // 게임 시작 시 초기화 및 이벤트 리스너 설정
         renderGame();
@@ -79,7 +51,7 @@ public class GameController {
         stepQueue.add(result);
 
         if (result == 4 || result == 5) { // 윷 혹은 모일 경우
-            JOptionPane.showMessageDialog(null, "윷/모입니다! 한 번 더 던지세요.");
+            view.showMessage("윷/모입니다! 한 번 더 던지세요.");
         } else {
             isRollingPhase = false;
             handleTurn();
@@ -125,12 +97,13 @@ public class GameController {
             String message = (totalCaptured == 1)
                     ? "상대방의 말을 잡았습니다!"
                     : "상대방의 말을 " + totalCaptured + "개 잡았습니다!";
-            JOptionPane.showMessageDialog(null, message);
+            view.showMessage(message);
+
         }
 
         // 잡은 말이 있어서 추가 턴이 있을 경우,  현재 플레이어에게 윷 던지기 기회 부여
         if (remainingAdditionalTurns > 0) {
-            JOptionPane.showMessageDialog(null, "윷을 " + remainingAdditionalTurns + "번 더 던질 수 있습니다!");
+            view.showMessage("윷을 " + remainingAdditionalTurns + "번 더 던질 수 있습니다!");
             isRollingPhase = true;
             renderGame();
             remainingAdditionalTurns--;
@@ -146,33 +119,87 @@ public class GameController {
 
 
 
-    public boolean checkAndEndGame(Player currentPlayer) { // 게임 종료 조건 체크 후 재시작 혹은 종료
+    public boolean checkAndEndGame(Player currentPlayer) {
         long finished = currentPlayer.getPieces().stream().filter(Piece::isFinished).count();
         if (finished == game.getPieceNumPerPlayer()) {
-            int choice = JOptionPane.showOptionDialog(null,
-                    currentPlayer.getName() + "님이 승리했습니다!\n게임을 다시 시작하시겠습니까?",
-                    "게임 종료",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    new String[]{"재시작", "종료"},
-                    "재시작");
-
-            if (choice == JOptionPane.YES_OPTION) { // 재시작 선택 시
-                view.getFrame().dispose();
+            boolean restart = view.askRestart(currentPlayer.getName());
+            if (restart) {
+                view.dispose();
                 Player.resetCounter();
-                SwingUtilities.invokeLater(() -> YutnoriApplication.main(null)); // 새로운 게임 시작 (YutnoriApplication 의 main() 함수 호출)
+                restartGame();
             } else {
-                System.exit(0); // 종료 선택 시 프로그램 종료
+                System.exit(0);
             }
-            return true; // 게임 종료 O
+            return true;
         }
-        return false; // 게임 종료 X
+        return false;
     }
-
 
     public void renderGame() { // 게임 상태를 렌더링하는 method
         Player currentPlayer = game.getCurrentPlayer();
         view.render(currentPlayer, game.getPlayers());
+    }
+
+    private void restartGame() {
+        if (view instanceof FXGameView) {
+            javafx.application.Platform.runLater(() -> {
+                Object[] options = {"Swing", "JavaFX"};
+                int selected = JOptionPane.showOptionDialog(
+                        null,
+                        "어떤 UI로 재시작 하시겠습니까?",
+                        "UI 선택",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
+
+                if (selected == 0) {
+                    // Swing UI로 다시 시작
+                    new Thread(() -> SwingUtilities.invokeLater(() -> {
+                        GameViewInterface swingView = new GameView();
+                        new GameController(swingView);
+                    })).start();
+                } else {
+                    // 다시 JavaFX로
+                    Stage restartStage = new Stage();
+                    GameViewInterface newView = new FXGameView(restartStage);
+                    new GameController(newView);
+                }
+            });
+        }
+        else {
+            // Swing UI로 다시 시작
+            // TODO: 여기서 문제 생김 -> main으로 다시 가버려서 JavaFX가 한 JVM Thread에서 두 번 실행됨
+            SwingUtilities.invokeLater(() -> {
+                Object[] options = {"Swing", "JavaFX"};
+                int selected = JOptionPane.showOptionDialog(
+                        null,
+                        "어떤 UI로 재시작 하시겠습니까?",
+                        "UI 선택",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
+
+                if (selected == 0) {
+                    // Swing UI로 다시 시작
+                    new Thread(() -> SwingUtilities.invokeLater(() -> {
+                        GameViewInterface swingView = new GameView();
+                        new GameController(swingView);
+                    })).start();
+                } else {
+                    // 다시 JavaFX로
+                    if (!YutnoriApplication.javaFXAlreadyRan) {
+                        YutnoriApplication.main(null);
+                    } else {
+                        Stage restartStage = new Stage();
+                        GameViewInterface newView = new FXGameView(restartStage);
+                        new GameController(newView);
+                    }
+                }
+            });
+        }
     }
 }
