@@ -1,5 +1,7 @@
 package com.yutnori.FXview;
 
+import com.yutnori.view.BoardView;
+import com.yutnori.viewInterface.BoardViewInterface;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
@@ -11,7 +13,7 @@ import com.yutnori.model.*;
 import java.awt.Point;
 import java.util.*;
 
-public class FXBoardView extends Pane { // JPanel 대신 JavaFX의 Pane을 사용
+public class FXBoardView extends Pane implements BoardViewInterface { // JPanel 대신 JavaFX의 Pane을 사용
     private final Canvas canvas;
     private final Board board;
 
@@ -29,6 +31,11 @@ public class FXBoardView extends Pane { // JPanel 대신 JavaFX의 Pane을 사�
         drawLines(gc);
         drawNodes(gc);
         drawPieces(gc);
+    }
+
+    @Override
+    public void repaint() {
+        render();  // 또는 JavaFX의 적절한 재렌더링 로직
     }
 
     private void drawLines(GraphicsContext gc) {

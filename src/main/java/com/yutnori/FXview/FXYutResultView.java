@@ -1,6 +1,7 @@
 package com.yutnori.FXview;
 
 import com.yutnori.model.Yut;
+import com.yutnori.viewInterface.YutResultViewInterface;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,7 +12,7 @@ import javafx.scene.text.Font;
 
 import java.util.*;
 
-public class FXYutResultView extends VBox {
+public class FXYutResultView extends VBox implements YutResultViewInterface {
 
     private final ComboBox<String> selectYutCombo;
     private final Button selectYutButton;
@@ -52,6 +53,7 @@ public class FXYutResultView extends VBox {
         return throwRandomButton;
     }
 
+    @Override
     public int getSelectedYutValue() {
         String selected = selectYutCombo.getValue();
         return switch (selected) {
@@ -65,6 +67,7 @@ public class FXYutResultView extends VBox {
         };
     }
 
+    @Override
     public void setYutResult(Yut currentYut) {
         this.currentYut = currentYut;
         drawYutResult();
@@ -171,4 +174,13 @@ public class FXYutResultView extends VBox {
             default -> "알 수 없음";
         };
     }
+
+    public void setThrowRandomAction(Runnable handler) {
+        throwRandomButton.setOnAction(e -> handler.run());
+    }
+
+    public void setSelectYutAction(Runnable handler) {
+        selectYutButton.setOnAction(e -> handler.run());
+    }
+
 }

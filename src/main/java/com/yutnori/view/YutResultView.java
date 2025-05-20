@@ -1,6 +1,8 @@
 package com.yutnori.view;
 
 import com.yutnori.model.Yut;
+import com.yutnori.viewInterface.YutResultViewInterface;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.Random;
 import java.util.Collections;
 
 // 윷의 결과를 시각화하는 클래스
-public class YutResultView extends JPanel {
+public class YutResultView extends JPanel implements YutResultViewInterface {
 
     private Yut currentYut;
     private int dashIndex = -1;
@@ -18,6 +20,7 @@ public class YutResultView extends JPanel {
     private final JButton selectYutButton = new JButton("선택 윷 던지기");
     private final JButton throwRandomButton = new JButton("랜덤 윷 던지기");
 
+    @Override
     public void setYutResult(Yut currentYut) {
         this.currentYut = currentYut;
         repaint();
@@ -54,13 +57,10 @@ public class YutResultView extends JPanel {
     public JButton getThrowRandomButton() {
         return throwRandomButton;
     }
-    /*
-    public JComboBox<String> getSelectYutDropdown() {
-        return selectYutDropdown;
-    }
-     */
+
 
     // 드롭다운에서 선택된 윷 결과를 정수 값으로 반환
+    @Override
     public int getSelectedYutValue() {
         String selected = (String) selectYutDropdown.getSelectedItem();
         return switch (selected) {

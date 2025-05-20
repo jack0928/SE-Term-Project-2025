@@ -2,6 +2,7 @@ package com.yutnori.view;
 
 import com.yutnori.model.Piece;
 import com.yutnori.model.Player;
+import com.yutnori.viewInterface.PlayerStatusViewInterface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class PlayerStatusView extends JPanel {
+public class PlayerStatusView extends JPanel implements PlayerStatusViewInterface {
 
     private final List<JLabel> playerLabels = new java.util.ArrayList<>();
 
@@ -30,6 +31,7 @@ public class PlayerStatusView extends JPanel {
         repaint();
     }
 
+    @Override
     public void updateFinishedPieces(List<Player> players) { // 완료된 말(들) 업데이트
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);

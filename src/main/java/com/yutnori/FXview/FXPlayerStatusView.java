@@ -2,6 +2,7 @@ package com.yutnori.FXview;
 
 import com.yutnori.model.Piece;
 import com.yutnori.model.Player;
+import com.yutnori.viewInterface.PlayerStatusViewInterface;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -10,14 +11,15 @@ import javafx.scene.text.Font;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FXPlayerStatusView extends VBox {
+public class FXPlayerStatusView extends VBox implements PlayerStatusViewInterface {
 
     private final List<Label> playerLabels = new ArrayList<>();
 
     //기본 레이아웃 설정 , PlayerStatusView에서 setLayout()에 해당
-    public FXPlayerStatusView() {
+    public FXPlayerStatusView(List<Player> players) {
         setSpacing(10);
         setAlignment(Pos.CENTER);
+        render(players);
     }
 
     public void render(List<Player> players) {
@@ -34,6 +36,7 @@ public class FXPlayerStatusView extends VBox {
     }
 
     // 내부 구조는 변화가 없음
+    @Override
     public void updateFinishedPieces(List<Player> players) {
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
