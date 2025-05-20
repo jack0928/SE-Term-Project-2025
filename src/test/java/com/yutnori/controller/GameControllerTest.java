@@ -26,34 +26,28 @@ class GameControllerTest {
     GameController controller;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // 기본 플레이어/게임 세팅
         player = new Player("Tester");
         for (int i = 0; i < 4; i++) {
             player.addPiece(new Piece(i, player));
         }
+
         game = new Game(List.of(player), new SquareBoard(), 4);
 
-        // 뷰 mock 설정
+        when(mockView.getBoard()).thenReturn(game.getBoard());
+        when(mockView.getPlayers()).thenReturn(game.getPlayers());
         when(mockView.getBoardView()).thenReturn(mockBoardView);
         when(mockView.getStatusView()).thenReturn(mockStatusView);
 
-        controller = new GameController(); // 기본 생성자 사용
-
-        // 리플렉션으로 game, view 주입
-        Field gameField = GameController.class.getDeclaredField("game");
-        gameField.setAccessible(true);
-        gameField.set(controller, game);
-
-        Field viewField = GameController.class.getDeclaredField("view");
-        viewField.setAccessible(true);
-        viewField.set(controller, mockView);
+        controller = new GameController(mockView);
     }
 
     @Test
     void testRenderGame_callsRender() {
+        clearInvocations(mockView); // 테스트를 위해 초기 호출 제거. 기본적으로 controller 생성 시 renderGame()이 한 번 호출됨.
+
         controller.renderGame();
         verify(mockView).render(eq(player), anyList());
     }
