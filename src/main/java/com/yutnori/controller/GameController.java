@@ -6,13 +6,14 @@ import com.yutnori.YutnoriFXApplication;
 import com.yutnori.model.*;
 import com.yutnori.view.GameView;
 import com.yutnori.viewInterface.GameViewInterface;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.*;
 
 public class GameController {
     private Game game;
@@ -141,65 +142,19 @@ public class GameController {
     }
 
     private void restartGame() {
-        if (view instanceof FXGameView) {
-            javafx.application.Platform.runLater(() -> {
-                Object[] options = {"Swing", "JavaFX"};
-                int selected = JOptionPane.showOptionDialog(
-                        null,
-                        "어떤 UI로 재시작 하시겠습니까?",
-                        "UI 선택",
-                        JOptionPane.DEFAULT_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[0]);
-
-                if (selected == 0) {
-                    // Swing UI로 다시 시작
-                    new Thread(() -> SwingUtilities.invokeLater(() -> {
-                        GameViewInterface swingView = new GameView();
-                        new GameController(swingView);
-                    })).start();
-                } else {
-                    // 다시 JavaFX로
-                    Stage restartStage = new Stage();
-                    GameViewInterface newView = new FXGameView(restartStage);
-                    new GameController(newView);
-                }
+        if (view instanceof FXGameView) { // 현재 JavaFX로 실행되었을 경우
+            Platform.runLater(() -> {
+                Stage newStage = new Stage();
+                GameViewInterface fxView = new FXGameView(newStage);
+                new GameController(fxView);
             });
-        }
-        else {
-            // Swing UI로 다시 시작
-            // TODO: 여기서 문제 생김 -> main으로 다시 가버려서 JavaFX가 한 JVM Thread에서 두 번 실행됨
+        } else { // 현재 Swing으로 실행되었을 경우
             SwingUtilities.invokeLater(() -> {
-                Object[] options = {"Swing", "JavaFX"};
-                int selected = JOptionPane.showOptionDialog(
-                        null,
-                        "어떤 UI로 재시작 하시겠습니까?",
-                        "UI 선택",
-                        JOptionPane.DEFAULT_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[0]);
-
-                if (selected == 0) {
-                    // Swing UI로 다시 시작
-                    new Thread(() -> SwingUtilities.invokeLater(() -> {
-                        GameViewInterface swingView = new GameView();
-                        new GameController(swingView);
-                    })).start();
-                } else {
-                    // 다시 JavaFX로
-                    if (!YutnoriApplication.javaFXAlreadyRan) {
-                        YutnoriApplication.main(null);
-                    } else {
-                        Stage restartStage = new Stage();
-                        GameViewInterface newView = new FXGameView(restartStage);
-                        new GameController(newView);
-                    }
-                }
+                GameView newView = new GameView();
+                new GameController(newView);
             });
         }
     }
+
+
 }

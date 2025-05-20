@@ -10,6 +10,7 @@ import com.yutnori.view.PlayerStatusView;
 import com.yutnori.view.YutResultView;
 import com.yutnori.viewInterface.GameViewInterface;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -17,6 +18,8 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class FXGameView implements GameViewInterface {
     private final Stage stage;
@@ -37,7 +40,7 @@ public class FXGameView implements GameViewInterface {
         promptAndInitialize();
         setupUI();
         stage.setTitle("Yutnori Game");
-        stage.show(); // ✅ 이거 반드시 있어야 함
+        stage.show();
     }
 
     private void promptAndInitialize() {
@@ -92,8 +95,21 @@ public class FXGameView implements GameViewInterface {
     }
 
 
-    @Override public void render(Player current, List<Player> all) {
+    @Override
+    public void render(Player current, List<Player> all) {
         turnLabel.setText("현재 턴: " + current.getName());
+
+        // 플레이어 색상 따라 텍스트 색상 설정
+        if (!current.getPieces().isEmpty()) {
+            java.awt.Color awtColor = current.getPieces().get(0).getColor();
+            javafx.scene.paint.Color fxColor = javafx.scene.paint.Color.rgb(
+                    awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue()
+            );
+            turnLabel.setTextFill(fxColor);
+        } else {
+            turnLabel.setTextFill(javafx.scene.paint.Color.BLACK);
+        }
+
         boardView.render();
         statusView.updateFinishedPieces(all);
     }
@@ -217,6 +233,23 @@ public class FXGameView implements GameViewInterface {
     @Override
     public FXPlayerStatusView getStatusView() {
         return statusView;
+    }
+
+    @Override
+    public void restartGame(Consumer<Integer> callback) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("UI 선택");
+            alert.setHeaderText("어떤 UI로 재시작 하시겠습니까?");
+            ButtonType swingBtn = new ButtonType("Swing");
+            ButtonType fxBtn = new ButtonType("JavaFX");
+
+            alert.getButtonTypes().setAll(swingBtn, fxBtn);
+            Optional<ButtonType> result = alert.showAndWait();
+
+            int selected = (result.isPresent() && result.get() == swingBtn) ? 0 : 1;
+            callback.accept(selected);
+        });
     }
 
 }

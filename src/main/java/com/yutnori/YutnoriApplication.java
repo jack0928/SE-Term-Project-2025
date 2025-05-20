@@ -11,9 +11,7 @@ import javafx.stage.Stage;
 import javax.swing.*;
 
 public class YutnoriApplication {
-    public static boolean javaFXAlreadyRan = false;
     public static void main(String[] args) {
-        boolean javaFXAlreadyRan = false;
         Object[] options = {"Swing", "JavaFX"};
         int selected = JOptionPane.showOptionDialog(
                 null,
@@ -35,7 +33,6 @@ public class YutnoriApplication {
         }
 
         else { // JavaFX 실행
-            javaFXAlreadyRan = true;
             Application.launch(YutnoriFXApplication.class);
         }
     }

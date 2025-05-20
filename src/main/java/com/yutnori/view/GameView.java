@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class GameView implements GameViewInterface {
     private final JFrame frame;
@@ -246,6 +247,21 @@ public class GameView implements GameViewInterface {
     @Override
     public void dispose() {
         frame.dispose();
+    }
+
+    @Override
+    public void restartGame(Consumer<Integer> callback) {
+        Object[] options = {"Swing", "JavaFX"};
+        int selected = JOptionPane.showOptionDialog(
+                null,
+                "어떤 UI로 재시작 하시겠습니까?",
+                "UI 선택",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+        callback.accept(selected);
     }
 
 

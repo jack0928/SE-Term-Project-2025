@@ -6,6 +6,7 @@ import com.yutnori.view.*;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface GameViewInterface {
     BoardViewInterface getBoardView();
@@ -26,6 +27,7 @@ public interface GameViewInterface {
 
     Board getBoard();
     List<Player> getPlayers();
+    void restartGame(Consumer<Integer> callback);
 
 
 
