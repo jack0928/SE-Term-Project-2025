@@ -77,17 +77,6 @@ public class FXBoardView extends Pane implements BoardViewInterface { // JPanel 
                 gc.fillText("출발", p.x - 12, p.y + 5);
             }
 
-            else { // TODO: 현재 이 else문은 노드의 ID를 표시함. 디버깅 후 이 else문을 꼭 지워야 함
-                javafx.scene.text.Text text = new javafx.scene.text.Text(String.valueOf(id));
-                text.setFont(Font.font("Arial", 12));
-                double textWidth = text.getLayoutBounds().getWidth();
-                double textHeight = text.getLayoutBounds().getHeight();
-
-                gc.setFont(text.getFont());
-                gc.setFill(Color.GRAY);
-                gc.fillText(String.valueOf(id), (float)(p.x - textWidth / 2), (float)(p.y + textHeight / 4));
-            }
-
         }
     }
 
