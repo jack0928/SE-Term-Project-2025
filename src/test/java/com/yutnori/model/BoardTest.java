@@ -46,7 +46,7 @@ class BoardTest {
         assertNotNull(board.getInnerPath());
     }
 
-    @Testㅌㅋ
+    @Test
     void testRadiusConstants() {
         assertEquals(40, Board.getRadius());
         assertEquals(60, Board.getCornerRadius());
