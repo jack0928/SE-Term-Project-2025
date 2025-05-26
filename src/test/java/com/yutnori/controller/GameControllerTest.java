@@ -99,6 +99,45 @@ class GameControllerTest {
     }
 
     @Test
+    void testHandleTurn_noCapture_noExtraTurn() throws Exception {
+        Field field = GameController.class.getDeclaredField("stepQueue");
+        field.setAccessible(true);
+        Queue<Integer> queue = (Queue<Integer>) field.get(controller);
+        queue.add(1);
+
+        Piece piece = player.getPieces().get(0);
+        when(mockView.promptStepSelection(any(), anyList())).thenReturn(1);
+        when(mockView.promptPieceSelection(any(), eq(1))).thenReturn(piece);
+
+        controller.handleTurn();
+
+        // "잡았습니다" 메시지가 호출되지 않음
+        verify(mockView, never()).showMessage(contains("잡았습니다"));
+    }
+
+    @Test
+    void testHandleYutThrow_normalResult_triggersHandleTurn() throws Exception {
+        // isRollingPhase = true 보장
+        Field isRollingPhaseField = GameController.class.getDeclaredField("isRollingPhase");
+        isRollingPhaseField.setAccessible(true);
+        isRollingPhaseField.setBoolean(controller, true);
+
+        // throwYut()가 3을 반환하도록 설정 (윷/모 아님)
+        when(mockView.throwYut(false)).thenReturn(3);
+
+        //step 선택 및 말 선택 mocking
+        Piece testPiece = player.getPieces().get(0);
+        when(mockView.promptStepSelection(any(), anyList())).thenReturn(3);
+        when(mockView.promptPieceSelection(any(), eq(3))).thenReturn(null); // 턴 종료를 유도
+
+        // 실행
+        controller.handleYutThrow(false);
+
+        // 검증: render()가 적어도 한 번 이상 호출됐는지 확인 (handleTurn 실행됨을 간접 확인)
+        verify(mockView, atLeastOnce()).render(any(), any());
+    }
+
+    @Test
     void testHandleYutThrow_addsResultAndSkipsHandleTurn_onYutOrMo() throws Exception {
         when(mockView.throwYut(false)).thenReturn(4); // 윷: 추가 턴
 
@@ -189,9 +228,19 @@ class GameControllerTest {
         verify(mockView, never()).throwYut(anyBoolean());
     }
 
+    @Test
+    void testCheckAndEndGame_restartFlow() {
+        for (Piece piece : player.getPieces()) {
+            piece.setFinished(true); // 모든 말 완료 처리
+        }
 
-    // NOTE:
-    // restartGame()은 UI 창을 새로 여는 JavaFX/Swing 관련 로직이므로 단위 테스트에서 제외합니다.
-    // 이 메서드는 통합 테스트나 수동 QA로 검증 대상입니다.
+        // Mock restart
+        when(mockView.askRestart(anyString())).thenReturn(true);
+
+        boolean result = controller.checkAndEndGame(player);
+
+        assertTrue(result);
+        verify(mockView).dispose();
+    }
 
 }
