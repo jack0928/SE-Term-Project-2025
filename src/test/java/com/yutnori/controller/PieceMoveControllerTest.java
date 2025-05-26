@@ -64,6 +64,16 @@ class PieceMoveControllerTest {
     }
 
     @Test
+    void testMovePiece_doesNothingWhenAlreadyFinished() {
+        piece.setFinished(true);
+        controller.movePiece(piece, 2);
+
+        // 상태가 그대로 유지되는지 확인
+        assertFalse(piece.isOnBoard());
+        assertNull(piece.getPosition());
+    }
+
+    @Test
     void testMovePiece_doesNothingWhenNextIsNull() {
         piece.setOnBoard(true);
         Cell original = board.getCells().get(board.getCells().size() - 1); // 마지막 칸
@@ -231,6 +241,18 @@ class PieceMoveControllerTest {
     }
 
     @Test
+    void testCheckFinishCondition_triggersFinishWhenAtStartWithHistory() {
+        piece.setOnBoard(true);
+        piece.moveTo(board.getCells().get(0));
+        piece.getHistory().push(0);
+        piece.getHistory().push(5);  // history.size() > 1
+
+        controller.movePiece(piece, 0);  // 0이면 이동은 없지만 상태 평가
+
+        assertTrue(piece.isFinished());
+    }
+
+    @Test
     void testFinishTrigger_whenOnSpecialCellAfterTwoZeros() {
         piece.setOnBoard(true);
         piece.moveTo(board.getCells().get(2)); // 2번 셀 (0이 아님)
@@ -256,6 +278,28 @@ class PieceMoveControllerTest {
 
         piece.setOnBoard(true);
         piece.moveTo(target);
+
+        controller.handleGrouping(piece);
+
+        assertEquals(other, piece.getGroupLeader());
+        assertTrue(other.getGroupingPieces().contains(piece));
+    }
+
+    @Test
+    void testHandleGrouping_centralCellPairMergedInSquareBoard() {
+        // 22번 셀에 piece, 27번 셀에 같은 플레이어 말 배치
+        Piece other = new Piece(2, player);
+        player.addPiece(other);
+
+        Cell cell22 = board.getCells().get(22);
+        Cell cell27 = board.getCells().get(27);
+
+        cell22.addPiece(piece);
+        cell27.addPiece(other);
+        piece.setOnBoard(true);
+        piece.moveTo(cell22);
+        other.setOnBoard(true);
+        other.moveTo(cell27);
 
         controller.handleGrouping(piece);
 
@@ -297,5 +341,16 @@ class PieceMoveControllerTest {
         assertNull(piece.getGroupLeader());
     }
 
+    @Test
+    void testBackDo_setsPassedStartOnce_whenLandingOnStart() {
+        piece.setOnBoard(true);
+        piece.moveTo(board.getCells().get(1)); // 일단 시작점 아닌 곳에 위치
+        piece.getHistory().push(0); // 이동 시 pop → 0번 셀로 이동 유도
+
+        controller.movePiece(piece, -1); // 빽도 실행
+
+        assertEquals(0, piece.getPosition().getId());
+        assertTrue(piece.hasPassedStartOnce()); // 이 줄이 커버 포인트
+    }
 
 }
