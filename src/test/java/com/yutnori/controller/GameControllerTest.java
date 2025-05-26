@@ -112,6 +112,84 @@ class GameControllerTest {
         assertEquals(4, queue.peek());
     }
 
+    @Test
+    void testHandleTurn_multipleCaptures_showsCorrectMessage_realistic() throws Exception {
+        // stepQueue 준비
+        Field stepQueueField = GameController.class.getDeclaredField("stepQueue");
+        stepQueueField.setAccessible(true);
+        Queue<Integer> queue = (Queue<Integer>) stepQueueField.get(controller);
+        queue.add(0); // 0번 셀로 이동 (테스트용 목적지)
+
+        // 현재 플레이어의 말
+        Piece mainPiece = player.getPieces().get(0);
+        mainPiece.setOnBoard(true);
+        mainPiece.moveTo(game.getBoard().getCells().get(0));
+
+        // 적 플레이어 추가 및 말 두 개 배치 (같은 셀에)
+        Player enemy = new Player("Enemy");
+        Piece enemy1 = new Piece(10, enemy);
+        Piece enemy2 = new Piece(11, enemy);
+        enemy1.setOnBoard(true);
+        enemy2.setOnBoard(true);
+
+        Cell sharedCell = game.getBoard().getCells().get(0);
+        enemy1.moveTo(sharedCell);
+        enemy2.moveTo(sharedCell);
+
+        sharedCell.addPiece(mainPiece); // 테스트 말도 같은 칸에
+
+        game.getPlayers().add(enemy); // 게임에 플레이어 추가
+
+        // mockView 입력 흐름 구성
+        when(mockView.promptStepSelection(any(), anyList())).thenReturn(0);
+        when(mockView.promptPieceSelection(any(), eq(0))).thenReturn(mainPiece);
+
+        controller.handleTurn();
+
+        // 잡은 말 메시지 확인 (정확히 2개가 잡히므로)
+        verify(mockView).showMessage(contains("2개 잡았습니다"));
+    }
+
+    @Test
+    void testHandleTurn_additionalTurns_granted() throws Exception {
+        Field stepField = GameController.class.getDeclaredField("stepQueue");
+        stepField.setAccessible(true);
+        Queue<Integer> queue = (Queue<Integer>) stepField.get(controller);
+        queue.add(3);
+
+        Piece testPiece = player.getPieces().get(0);
+
+        when(mockView.promptStepSelection(any(), anyList())).thenReturn(3);
+        when(mockView.promptPieceSelection(any(), anyInt())).thenReturn(testPiece);
+
+        // capturedCount를 강제로 설정하여 추가 턴 발생시키기 위해
+        Field addTurnField = GameController.class.getDeclaredField("remainingAdditionalTurns");
+        addTurnField.setAccessible(true);
+        addTurnField.setInt(controller, 1);
+
+        controller.handleTurn();
+
+        verify(mockView).showMessage(contains("번 더 던질 수 있습니다"));
+    }
+
+    @Test
+    void testHandleYutThrow_earlyReturn_whenNotRollingPhase() {
+        // 강제로 isRollingPhase = false 설정
+        Field field;
+        try {
+            field = GameController.class.getDeclaredField("isRollingPhase");
+            field.setAccessible(true);
+            field.setBoolean(controller, false);
+        } catch (Exception e) {
+            fail("Failed to set isRollingPhase to false");
+            return;
+        }
+
+        controller.handleYutThrow(false);
+        verify(mockView, never()).throwYut(anyBoolean());
+    }
+
+
     // NOTE:
     // restartGame()은 UI 창을 새로 여는 JavaFX/Swing 관련 로직이므로 단위 테스트에서 제외합니다.
     // 이 메서드는 통합 테스트나 수동 QA로 검증 대상입니다.
