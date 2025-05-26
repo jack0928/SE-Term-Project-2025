@@ -54,4 +54,32 @@ class SquareBoardTest {
         Cell result = board.getDestinationCell(current, 3, board, piece);
         assertEquals(3, result.getId());
     }
+
+    @Test
+    void testIsCorner_returnsTrueForCornerIds() {
+        // 0, 5, 10, 15는 코너
+        assertTrue(board.isCorner(0));
+        assertTrue(board.isCorner(5));
+        assertTrue(board.isCorner(10));
+        assertTrue(board.isCorner(15));
+    }
+
+    @Test
+    void testIsCorner_returnsFalseForNonCornerIds() {
+        // 1은 코너가 아님
+        assertFalse(board.isCorner(1));
+        assertFalse(board.isCorner(6));
+    }
+
+    @Test
+    void testIsCentre_returnsTrueForCentreIds() {
+        assertTrue(board.isCentre(22));
+        assertTrue(board.isCentre(27));
+    }
+
+    @Test
+    void testIsCentre_returnsFalseForNonCentreIds() {
+        assertFalse(board.isCentre(0));
+        assertFalse(board.isCentre(21));
+    }
 }
