@@ -49,4 +49,32 @@ class PentagonBoardTest {
         assertEquals(3, piece.getHistory().size());
         assertEquals(2, piece.getHistory().peek());
     }
+
+    @Test
+    void testIsCorner_withCornerIds_returnsTrue() {
+        assertTrue(board.isCorner(0));
+        assertTrue(board.isCorner(5));
+        assertTrue(board.isCorner(10));
+        assertTrue(board.isCorner(15));
+        assertTrue(board.isCorner(20));
+    }
+
+    @Test
+    void testIsCorner_withNonCornerId_returnsFalse() {
+        assertFalse(board.isCorner(1));
+        assertFalse(board.isCorner(6));
+        assertFalse(board.isCorner(27)); // centre
+    }
+
+    @Test
+    void testIsCentre_withCentreId_returnsTrue() {
+        assertTrue(board.isCentre(27));
+    }
+
+    @Test
+    void testIsCentre_withNonCentreId_returnsFalse() {
+        assertFalse(board.isCentre(0));
+        assertFalse(board.isCentre(5));
+        assertFalse(board.isCentre(30));
+    }
 }

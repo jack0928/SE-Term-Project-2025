@@ -49,4 +49,27 @@ class HexagonBoardTest {
         assertEquals(3, piece.getHistory().size());
         assertEquals(2, piece.getHistory().peek());
     }
+
+    @Test
+    void testIsCorner_returnsTrueForCornerIds() {
+        // CORNERS = {0, 5, 10, 15, 20, 25}
+        for (int id : new int[]{0, 5, 10, 15, 20, 25}) {
+            assertTrue(board.isCorner(id), "Expected true for corner id: " + id);
+        }
+    }
+
+    @Test
+    void testIsCorner_returnsFalseForNonCornerId() {
+        assertFalse(board.isCorner(3));  // CORNERS에 없는 값
+    }
+
+    @Test
+    void testIsCentre_returnsTrueForCentreId() {
+        assertTrue(board.isCentre(32));
+    }
+
+    @Test
+    void testIsCentre_returnsFalseForNonCentreId() {
+        assertFalse(board.isCentre(15)); // CENTRE가 아닌 값
+    }
 }
