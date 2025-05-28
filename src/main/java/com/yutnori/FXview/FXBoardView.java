@@ -1,6 +1,5 @@
 package com.yutnori.FXview;
 
-import com.yutnori.view.BoardView;
 import com.yutnori.viewInterface.BoardViewInterface;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;

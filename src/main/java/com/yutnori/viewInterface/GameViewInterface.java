@@ -1,9 +1,6 @@
 package com.yutnori.viewInterface;
 
 import com.yutnori.model.*;
-import com.yutnori.view.*;
-
-import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.function.Consumer;

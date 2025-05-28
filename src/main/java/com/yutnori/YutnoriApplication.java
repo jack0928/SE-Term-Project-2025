@@ -1,11 +1,9 @@
 package com.yutnori;
 
-import com.yutnori.FXview.FXGameView;
 import com.yutnori.controller.GameController;
 import com.yutnori.view.GameView;
 import com.yutnori.viewInterface.GameViewInterface;
 import javafx.application.Application;
-import javafx.stage.Stage;
 
 
 import javax.swing.*;

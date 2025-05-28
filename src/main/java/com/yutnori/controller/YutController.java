@@ -1,7 +1,6 @@
 package com.yutnori.controller;
 
 import com.yutnori.model.Yut;
-import com.yutnori.view.YutResultView;
 import com.yutnori.viewInterface.YutResultViewInterface;
 
 public class YutController {
