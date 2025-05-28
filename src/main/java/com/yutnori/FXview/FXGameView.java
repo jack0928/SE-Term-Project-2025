@@ -5,7 +5,6 @@ import com.yutnori.model.*;
 import com.yutnori.view.YutResultView;
 import com.yutnori.viewInterface.GameViewInterface;
 
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -13,9 +12,6 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 public class FXGameView implements GameViewInterface {
     private final Stage stage;
     private final Label turnLabel = new Label();
