@@ -1,15 +1,16 @@
 package com.yutnori.FXview;
 
-
 import com.yutnori.controller.YutController;
 import com.yutnori.model.*;
 import com.yutnori.view.YutResultView;
 import com.yutnori.viewInterface.GameViewInterface;
+
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
