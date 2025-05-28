@@ -1,15 +1,10 @@
 package com.yutnori.controller;
 
 import com.yutnori.FXview.FXGameView;
-import com.yutnori.YutnoriApplication;
-import com.yutnori.YutnoriFXApplication;
 import com.yutnori.model.*;
 import com.yutnori.view.GameView;
 import com.yutnori.viewInterface.GameViewInterface;
-import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 import javax.swing.*;

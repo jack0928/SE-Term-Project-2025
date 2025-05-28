@@ -1,16 +1,10 @@
 package com.yutnori.FXview;
 
-import com.yutnori.FXview.FXBoardView;
-import com.yutnori.FXview.FXPlayerStatusView;
-import com.yutnori.FXview.FXYutResultView;
 import com.yutnori.controller.YutController;
 import com.yutnori.model.*;
-import com.yutnori.view.BoardView;
-import com.yutnori.view.PlayerStatusView;
 import com.yutnori.view.YutResultView;
 import com.yutnori.viewInterface.GameViewInterface;
 
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -18,9 +12,6 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 public class FXGameView implements GameViewInterface {
     private final Stage stage;
     private final Label turnLabel = new Label();
@@ -134,11 +125,11 @@ public class FXGameView implements GameViewInterface {
                 .filter(step -> !(step == -1 && player.getPieces().stream().noneMatch(Piece::isOnBoard)))
                 .toList();
 
-        // ✅ 자동 선택 가능한 경우
+        // 자동 선택 가능한 경우
         if (filteredSteps.isEmpty()) return steps.get(0);           // 모두 invalid → skip
         if (filteredSteps.size() == 1) return filteredSteps.get(0); // 하나뿐이면 자동 선택
 
-        // ✅ 2개 이상 → 사용자에게 선택 받기
+        // 2개 이상 → 사용자에게 선택 받기
         List<String> options = filteredSteps.stream()
                 .map(YutResultView::getResultText)
                 .toList();
@@ -235,21 +226,5 @@ public class FXGameView implements GameViewInterface {
         return statusView;
     }
 
-    @Override
-    public void restartGame(Consumer<Integer> callback) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("UI 선택");
-            alert.setHeaderText("어떤 UI로 재시작 하시겠습니까?");
-            ButtonType swingBtn = new ButtonType("Swing");
-            ButtonType fxBtn = new ButtonType("JavaFX");
-
-            alert.getButtonTypes().setAll(swingBtn, fxBtn);
-            Optional<ButtonType> result = alert.showAndWait();
-
-            int selected = (result.isPresent() && result.get() == swingBtn) ? 0 : 1;
-            callback.accept(selected);
-        });
-    }
 
 }
