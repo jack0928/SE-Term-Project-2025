@@ -24,7 +24,6 @@ public interface GameViewInterface {
 
     Board getBoard();
     List<Player> getPlayers();
-    void restartGame(Consumer<Integer> callback);
 
 
 

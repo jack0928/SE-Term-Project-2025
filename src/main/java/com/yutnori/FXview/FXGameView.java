@@ -230,21 +230,5 @@ public class FXGameView implements GameViewInterface {
         return statusView;
     }
 
-    @Override
-    public void restartGame(Consumer<Integer> callback) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("UI 선택");
-            alert.setHeaderText("어떤 UI로 재시작 하시겠습니까?");
-            ButtonType swingBtn = new ButtonType("Swing");
-            ButtonType fxBtn = new ButtonType("JavaFX");
-
-            alert.getButtonTypes().setAll(swingBtn, fxBtn);
-            Optional<ButtonType> result = alert.showAndWait();
-
-            int selected = (result.isPresent() && result.get() == swingBtn) ? 0 : 1;
-            callback.accept(selected);
-        });
-    }
 
 }

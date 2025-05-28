@@ -249,20 +249,5 @@ public class GameView implements GameViewInterface {
         frame.dispose();
     }
 
-    @Override
-    public void restartGame(Consumer<Integer> callback) {
-        Object[] options = {"Swing", "JavaFX"};
-        int selected = JOptionPane.showOptionDialog(
-                null,
-                "어떤 UI로 재시작 하시겠습니까?",
-                "UI 선택",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]);
-        callback.accept(selected);
-    }
-
 
 }
