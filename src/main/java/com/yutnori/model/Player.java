@@ -2,7 +2,6 @@ package com.yutnori.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Player {
     private static int nextId = 1; // 자동 증가 ID용 static 변수
