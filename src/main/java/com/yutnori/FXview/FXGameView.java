@@ -129,11 +129,11 @@ public class FXGameView implements GameViewInterface {
                 .filter(step -> !(step == -1 && player.getPieces().stream().noneMatch(Piece::isOnBoard)))
                 .toList();
 
-        // ✅ 자동 선택 가능한 경우
+        // 자동 선택 가능한 경우
         if (filteredSteps.isEmpty()) return steps.get(0);           // 모두 invalid → skip
         if (filteredSteps.size() == 1) return filteredSteps.get(0); // 하나뿐이면 자동 선택
 
-        // ✅ 2개 이상 → 사용자에게 선택 받기
+        // 2개 이상 → 사용자에게 선택 받기
         List<String> options = filteredSteps.stream()
                 .map(YutResultView::getResultText)
                 .toList();
