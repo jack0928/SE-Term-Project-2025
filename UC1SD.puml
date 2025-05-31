@@ -1,0 +1,46 @@
+@startuml
+title UC1: Game Initialization Sequence Diagram (JavaFX & Swing)
+
+actor User
+participant Board as Board
+participant FXGameView as FXGameView
+participant Game as Game
+participant GameController as GameController
+participant GameView as GameView
+participant Player as Player
+participant SwingUtilities as SwingUtilities
+participant YutnoriApplication as YutnoriApplication
+participant YutnoriFXApplication as YutnoriFXApplication
+
+User -> YutnoriApplication : main()
+YutnoriApplication -> User : display UI selection prompt
+User -> YutnoriApplication : select UI type
+
+alt if JavaFX selected
+  YutnoriApplication -> YutnoriFXApplication : Application.launch()
+  YutnoriFXApplication -> FXGameView : new FXGameView(Stage)
+  FXGameView -> GameController : new GameController(view)
+
+  GameController -> FXGameView : getBoard()
+  GameController -> FXGameView : getPlayers()
+  GameController -> Player : getPieces().size()
+  GameController -> Game : new Game(players, board, pieceCount)
+  GameController -> FXGameView : setThrowRandomButtonListener(...)
+  GameController -> FXGameView : setSelectButtonListener(...)
+
+else if Swing selected
+  YutnoriApplication -> SwingUtilities : invokeLater(...)
+  activate SwingUtilities
+  SwingUtilities -> GameView : new GameView()
+  GameView -> GameController : new GameController(view)
+  deactivate SwingUtilities
+
+  GameController -> GameView : getBoard()
+  GameController -> GameView : getPlayers()
+  GameController -> Player : getPieces().size()
+  GameController -> Game : new Game(players, board, pieceCount)
+  GameController -> GameView : setThrowRandomButtonListener(...)
+  GameController -> GameView : setSelectButtonListener(...)
+end alt
+
+@enduml

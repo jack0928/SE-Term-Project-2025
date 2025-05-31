@@ -1,0 +1,27 @@
+@startuml
+
+title UC8: Check Victory Condition
+
+actor GameSystem
+participant GameController
+participant GameSystem
+participant Piece
+participant Game
+
+GameSystem -> GameController : ends the turn
+
+GameController -> GameSystem : getPieces()
+loop for every piece
+    GameSystem -> Piece : isFinished()
+    Piece --> GameSystem : true/false
+end
+
+GameController -> Game : getPieceNumPerPlayer()
+Game --> GameController : int (예: 4)
+
+alt every piece: isFinished == true
+    GameController --> GameController : UC9 호출 (게임 종료 처리)
+else
+    GameController --> GameController : 게임 계속 진행
+end
+@enduml

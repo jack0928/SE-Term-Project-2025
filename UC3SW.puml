@@ -1,0 +1,42 @@
+@startuml
+title UC3: Move Piece (Swing Version)
+
+actor Player
+participant GameView as GameView
+participant GameController as GameController
+participant Board as Board
+participant Piece as Piece
+participant Game as Game
+
+GameController -> GameView : displayAvailableSteps(stepQueue)
+
+Player -> GameView : select step and piece
+GameView -> GameController : moveSelectedPiece(step, piece)
+
+GameController -> Game : getCurrentPlayer()
+GameController -> Piece : getCurrentPosition()
+GameController -> Board : getNextPosition(piece, step)
+Board --> Piece : return targetPosition
+
+GameController -> Piece : moveTo(targetPosition)
+
+GameController -> Game : applySpecialRules(piece)
+Game -> Piece : checkCaptureOrStack()
+Game -> GameView : showResultMessage()
+
+loop if stepQueue is not empty
+    GameController -> GameView : displayAvailableSteps(stepQueue)
+    Player -> GameView : select step and piece
+    GameView -> GameController : moveSelectedPiece(step, piece)
+end loop
+
+GameController -> Game : checkWinCondition()
+alt if winner exists
+    Game -> GameView : displayWinner(player)
+    GameView -> GameController : askRestartOrExit()
+else
+    GameController -> Game : switchTurn()
+    Game -> GameView : updateTurnDisplay()
+end alt
+
+@enduml

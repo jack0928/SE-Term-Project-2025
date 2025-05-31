@@ -1,0 +1,37 @@
+@startuml
+title UC6: Apply Special Rules - Capture and Grouping
+
+actor GameSystem
+participant GameController
+participant PieceMoveController
+participant Piece
+participant Cell
+
+GameSystem -> GameController : trigger movePiece()
+GameController -> PieceMoveController : movePiece(piece, steps)
+
+alt piece reaches destination cell
+    PieceMoveController -> PieceMoveController : handleCapture(piece)
+    PieceMoveController -> Piece : getPosition()
+    Piece -> Cell : getStackedPieces()
+    loop for each piece in cell
+        alt other piece is opponent
+            PieceMoveController -> Piece : reset()
+            PieceMoveController -> Piece : resetGrouping()
+            PieceMoveController -> Piece : setGroupLeader(null)
+        end
+    end
+
+    PieceMoveController -> PieceMoveController : handleGrouping(piece)
+    PieceMoveController -> Piece : getPosition()
+    Piece -> Cell : getStackedPieces()
+    loop for each piece in cell
+        alt other piece is same owner
+            PieceMoveController -> Piece : getGroupLeaderOrSelf()
+            PieceMoveController -> Piece : getAllGroupedPieces()
+            PieceMoveController -> Piece : addGroupingPiece(piece)
+        end
+    end
+end
+
+@enduml

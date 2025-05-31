@@ -1,0 +1,63 @@
+@startuml
+title UC5: Apply PentagonBoard / HexagonBoard Movement Rule
+
+actor GameSystem
+participant GameController
+participant PieceMoveController
+participant Board
+participant Piece
+participant Cell
+
+GameSystem -> GameController : selectPieceAndStep()
+GameController -> PieceMoveController : movePiece(piece, steps)
+
+alt piece is not on board and steps > 0
+    PieceMoveController -> Board : getCells()
+    Board --> PieceMoveController : List<Cell>
+    PieceMoveController -> Piece : setOnBoard(true)
+    PieceMoveController -> Piece : moveTo(start)
+
+    PieceMoveController -> Board : getDestinationCell(start, steps, board, piece)
+    Board --> PieceMoveController : Cell
+    PieceMoveController -> Piece : moveTo(next)
+    PieceMoveController -> PieceMoveController : checkFinishCondition(piece)
+    alt piece is not finished
+        PieceMoveController -> PieceMoveController : handleCapture(piece)
+        PieceMoveController -> PieceMoveController : handleGrouping(piece)
+    end
+
+else if piece is on board
+    alt steps == -1
+        PieceMoveController -> Piece : getHistory()
+        alt history is not empty
+            PieceMoveController -> Piece : moveTo(cell from history.pop())
+            PieceMoveController -> PieceMoveController : checkFinishCondition(piece)
+            alt piece is not finished
+                PieceMoveController -> PieceMoveController : handleCapture(piece)
+                PieceMoveController -> PieceMoveController : handleGrouping(piece)
+            end
+            PieceMoveController -> Piece : getPosition()
+            alt position.getId() == 0
+                PieceMoveController -> Piece : setPassedStartOnce(true)
+            end
+        else
+            PieceMoveController -> Piece : getPosition()
+            PieceMoveController -> Piece : hasPassedStartOnce()
+            alt at start && passed once
+                PieceMoveController -> PieceMoveController : finishPiece(piece)
+            end
+        end
+    else
+        PieceMoveController -> Piece : getPosition()
+        PieceMoveController -> Board : getDestinationCell(current, steps, board, piece)
+        Board --> PieceMoveController : Cell
+        PieceMoveController -> Piece : moveTo(next)
+        PieceMoveController -> PieceMoveController : checkFinishCondition(piece)
+        alt piece is not finished
+            PieceMoveController -> PieceMoveController : handleCapture(piece)
+            PieceMoveController -> PieceMoveController : handleGrouping(piece)
+        end
+    end
+end
+
+@enduml

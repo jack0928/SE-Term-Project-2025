@@ -1,0 +1,31 @@
+@startuml
+title UC2: Throw Yut Sequence Diagram
+
+actor Player
+participant GameController as GameController
+participant GameView as GameView
+participant Yut as Yut
+participant YutController as YutController
+participant List as stepQueue
+
+Player -> GameView : press "Throw Yut" button
+GameView -> GameController : handleYutThrow(isRandom=true)
+
+GameController -> GameView : throwYut(isRandom)
+GameView -> YutController : throwYut(isRandom)
+YutController -> Yut : throw() → int
+Yut -> YutController : return result (0~5)
+YutController -> GameView : return result
+GameView -> GameController : return result
+
+GameController -> stepQueue : add(result)
+
+alt if result == 4 or 5 (윷 or 모)
+    GameController -> GameView : showMessage("윷/모입니다! 한 번 더 던지세요.")
+    GameController -> GameView : wait for another throw
+else
+    GameController -> GameController : isRollingPhase = false
+    GameController -> GameController : handleTurn() (→ UC3)
+end alt
+
+@enduml

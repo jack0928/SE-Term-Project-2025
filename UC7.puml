@@ -1,0 +1,63 @@
+@startuml
+title UC7: Switch Turn
+
+actor GameSystem
+participant GameController
+participant Game
+participant GameViewInterface as View
+participant PieceMoveController
+participant stepQueue
+
+GameSystem -> GameController : handleTurn()
+
+GameController -> stepQueue : copy to steps, clear()
+
+loop while steps not empty
+    GameController -> View : promptStepSelection(currentPlayer, steps)
+    View --> GameController : selectedStep
+
+    GameController -> View : promptPieceSelection(currentPlayer, selectedStep)
+    View --> GameController : selectedPiece
+
+    alt if selectedPiece == null
+        GameController -> Game : nextPlayer()
+        GameController -> View : render(currentPlayer, allPlayers)
+        deactivate GameController
+        return
+    end
+
+    GameController -> Game : getBoard()
+    GameController -> PieceMoveController : new(board)
+    GameController -> PieceMoveController : movePiece(selectedPiece, selectedStep)
+
+    GameController -> View : getBoardView().repaint()
+    GameController -> View : getStatusView().updateFinishedPieces(players)
+
+    GameController -> GameController : checkAndEndGame(currentPlayer)
+    alt if game ended
+        deactivate GameController
+        return
+    end
+
+    GameController -> View : render(currentPlayer, players)
+    GameController -> GameController : steps.remove(selectedStep)
+end
+
+alt if totalCaptured > 0
+    GameController -> View : showMessage("말을 잡았습니다")
+    GameController -> GameController : remainingAdditionalTurns++
+end
+
+alt if remainingAdditionalTurns > 0
+    GameController -> View : showMessage("윷을 더 던질 수 있습니다")
+    GameController -> View : render(currentPlayer, players)
+    GameController -> GameController : remainingAdditionalTurns--
+    deactivate GameController
+    return
+end
+
+GameController -> Game : nextPlayer()
+GameController -> View : render(newCurrentPlayer, players)
+deactivate GameController
+
+@enduml

@@ -1,0 +1,42 @@
+@startuml
+title UC3: Move Piece (JavaFX Version)
+
+actor Player
+participant FXGameView as FXGameView
+participant GameController as GameController
+participant Board as Board
+participant Piece as Piece
+participant Game as Game
+
+GameController -> FXGameView : displayAvailableSteps(stepQueue)
+
+Player -> FXGameView : select step and piece
+FXGameView -> GameController : moveSelectedPiece(step, piece)
+
+GameController -> Game : getCurrentPlayer()
+GameController -> Piece : getCurrentPosition()
+GameController -> Board : getNextPosition(piece, step)
+Board --> Piece : return targetPosition
+
+GameController -> Piece : moveTo(targetPosition)
+
+GameController -> Game : applySpecialRules(piece)
+Game -> Piece : checkCaptureOrStack()
+Game -> FXGameView : showResultMessage()
+
+loop if stepQueue is not empty
+    GameController -> FXGameView : displayAvailableSteps(stepQueue)
+        Player -> FXGameView : select step and piece
+        FXGameView -> GameController : moveSelectedPiece(step, piece)
+end loop
+
+GameController -> Game : checkWinCondition()
+alt if winner exists
+    Game -> FXGameView : displayWinner(player)
+    FXGameView -> GameController : askRestartOrExit()
+else
+    GameController -> Game : switchTurn()
+    Game -> FXGameView : updateTurnDisplay()
+end alt
+
+@enduml
