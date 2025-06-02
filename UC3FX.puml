@@ -8,35 +8,34 @@ participant Board as Board
 participant Piece as Piece
 participant Game as Game
 
-GameController -> FXGameView : displayAvailableSteps(stepQueue)
-
+loop while avaiableMove is not empty
+FXGameView -> Player : displayAvailableMove()
 Player -> FXGameView : select step and piece
-FXGameView -> GameController : moveSelectedPiece(step, piece)
-
-GameController -> Game : getCurrentPlayer()
-GameController -> Piece : getCurrentPosition()
-GameController -> Board : getNextPosition(piece, step)
-Board --> Piece : return targetPosition
-
-GameController -> Piece : moveTo(targetPosition)
-
-GameController -> Game : applySpecialRules(piece)
-Game -> Piece : checkCaptureOrStack()
-Game -> FXGameView : showResultMessage()
-
-loop if stepQueue is not empty
-    GameController -> FXGameView : displayAvailableSteps(stepQueue)
-        Player -> FXGameView : select step and piece
-        FXGameView -> GameController : moveSelectedPiece(step, piece)
+FXGameView -> GameController : getMovePieceInfo()
+alt squareBoard
+	ref over GameController
+		UC4 : squareMovementRule
+	end ref
+else pentaBoard or hexaBoard
+	ref over GameController
+		UC4 : PentaBoard/HexaBoard Movement Rule
+	end ref
+end alt
+ref over GameController
+		UC6 : Capture and Grouping
+	end ref
+GameController -> FXGameView : updateDisplay()
 end loop
 
-GameController -> Game : checkWinCondition()
-alt if winner exists
-    Game -> FXGameView : displayWinner(player)
-    FXGameView -> GameController : askRestartOrExit()
-else
-    GameController -> Game : switchTurn()
-    Game -> FXGameView : updateTurnDisplay()
-end alt
+
+
+'필요 없을듯?'
+ref over GameController
+	UC8: Check Victory Condition
+end ref
+ref over GameController
+	UC7: Switch Turn
+end ref
+
 
 @enduml

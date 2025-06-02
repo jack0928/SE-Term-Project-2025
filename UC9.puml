@@ -2,22 +2,17 @@
 
 title: UC9: Restart or Exit Game
 
-actor GameSystem
-participant GameController
-participant GameViewInterface as View
-participant Player
-participant System
+actor Player
+participant GameSystem
 
-GameSystem -> GameController : UC8 결과: 승리자 있음
+GameSystem -> Player : displayVictory()
+GameSystem -> Player : selectRestartOrExit()
+Player -> GameSystem : pressButton()
+alt if pressRestart
+	ref over GameSystem , Player
+		UC1 : 게임 시작
+	end ref
 
-GameController -> View : askRestart(playerName)
-View --> GameController : true / false
+end alt
 
-alt 재시작 선택
-    GameController -> View : dispose()
-    GameController -> Player : resetCounter()
-    GameController -> GameController : restartGame()
-else 게임 종료 선택
-    GameController -> System : exit(0)
-end
 @enduml

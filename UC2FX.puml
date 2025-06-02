@@ -15,13 +15,18 @@ YutController -> FXGameView : return result
 FXGameView -> GameController : return result
 
 GameController -> stepQueue : add(result)
+loop while result == 윷 or 모
+    GameController -> Player : showMessage("윷/모입니다! 한 번 더 던지세요.")
+	Player -> FXGameView : press "Throw Yut" button
 
-alt if result == 4 or 5 (윷 or 모)
-    GameController -> FXGameView : showMessage("윷/모입니다! 한 번 더 던지세요.")
-    GameController -> FXGameView : wait for another throw
-else
-    GameController -> GameController : isRollingPhase = false
-    GameController -> GameController : handleTurn() → UC3
-end alt
+    FXGameView -> YutController : throwYut(isRandom)
+
+    YutController -> FXGameView : return result
+    FXGameView -> GameController : return result
+    GameController -> stepQueue : add(result)
+end
+ref over GameController,FXGameView
+	UC3: movePiece
+end ref
 
 @enduml
