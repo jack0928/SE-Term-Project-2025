@@ -23,14 +23,8 @@ end alt
 GameController -> FXGameView : updateDisplay()
 end loop
 
-
-
-'필요 없을듯?'
 ref over GameController
 	UC8: Check Victory Condition
-end ref
-ref over GameController
-	UC7: Switch Turn
 end ref
 
 

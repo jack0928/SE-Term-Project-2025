@@ -1,15 +1,15 @@
 @startuml
 title UC4: Apply SquareBoard Movement Rule
 
-actor GameSystem
+
 participant GameController
 participant PieceMoveController
 participant FXGameView
 participant Piece
 participant SquareBoard
 
-GameSystem -> GameController : setMovementInfo()
-GameController -> PieceMoveController : movePiece(piece, steps)
+GameController -> PieceMoveController : setMovementInfo()
+
 
 alt piece is not on board and steps > 0
 	alt 빽도의 경우
@@ -17,22 +17,33 @@ alt piece is not on board and steps > 0
     	GameController -> FXGameView : display("이동불가")
     else 도, 개, 걸, 윷, 모의 경우
     	PieceMoveController -> Piece : setOnBoard(true)
-        PieceMoveController -> Piece : moveTo(nextPosition)
+        PieceMoveController -> Piece : moveTo(sideLinePosition)
+        PieceMoveController -> Piece : finishCheck()
         Piece -> FXGameView : displayPosition()
     end alt
 
 else if piece is on board
     alt 빽도의 경우
             PieceMoveController -> Piece : moveTo(nextPosition)
+            PieceMoveController -> Piece : finishCheck()
             alt piece is not finished
                 ref over GameController, PieceMoveController
                 	UC6 : Capture and Grouping
                 end ref
-            else piece at start
-            	PieceMoveController -> Piece : setPieceFinished()
-            end
+            end alt
     else 도, 개, 걸, 윷, 모의 경우
-        PieceMoveController -> Piece : moveTo(nextPosition)
+    	alt 외곽 순환
+        	PieceMoveController -> Piece : moveTo(sideLinePosition)
+        	PieceMoveController -> Piece : finishCheck()
+        else 꼭짓점 도착
+        	alt 마지막 꼭짓점이 아닐때
+        		PieceMoveController -> Piece : moveTo(대각선으로 방향 변경)
+        		PieceMoveController -> Piece : finishCheck()
+        	end alt
+       	else 중심점 도착
+       		PieceMoveController -> Piece : moveTo(도착지점으로 방향 변경)
+       		PieceMoveController -> Piece : finishCheck()
+        end alt
         Piece -> FXGameView : displayPosition()
         alt piece is not finished
             ref over GameController, PieceMoveController
