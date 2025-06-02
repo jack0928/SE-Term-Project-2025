@@ -10,8 +10,7 @@ participant Game as Game
 
 loop while avaiableMove is not empty
 FXGameView -> Player : displayAvailableMove()
-Player -> FXGameView : select step and piece
-FXGameView -> GameController : getMovePieceInfo()
+Player-> GameController : giveMovePieceInfo()
 alt squareBoard
 	ref over GameController
 		UC4 : squareMovementRule
@@ -21,9 +20,6 @@ else pentaBoard or hexaBoard
 		UC4 : PentaBoard/HexaBoard Movement Rule
 	end ref
 end alt
-ref over GameController
-		UC6 : Capture and Grouping
-	end ref
 GameController -> FXGameView : updateDisplay()
 end loop
 

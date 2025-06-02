@@ -4,58 +4,40 @@ title UC4: Apply SquareBoard Movement Rule
 actor GameSystem
 participant GameController
 participant PieceMoveController
-participant SquareBoard
+participant FXGameView
 participant Piece
-participant Cell
+participant SquareBoard
 
-GameSystem -> GameController : selectPieceAndStep()
+GameSystem -> GameController : setMovementInfo()
 GameController -> PieceMoveController : movePiece(piece, steps)
 
 alt piece is not on board and steps > 0
-    PieceMoveController -> SquareBoard : getCells()
-    SquareBoard --> PieceMoveController : List<Cell>
-    PieceMoveController -> Piece : setOnBoard(true)
-    PieceMoveController -> Piece : moveTo(start)
-
-    PieceMoveController -> SquareBoard : getDestinationCell(start, steps, board, piece)
-    SquareBoard --> PieceMoveController : Cell
-    PieceMoveController -> Piece : moveTo(next)
-    PieceMoveController -> PieceMoveController : checkFinishCondition(piece)
-    alt piece is not finished
-        PieceMoveController -> PieceMoveController : handleCapture(piece)
-        PieceMoveController -> PieceMoveController : handleGrouping(piece)
-    end
+	alt 빽도의 경우
+    	PieceMoveController -> GameController : unableToMove()
+    	GameController -> FXGameView : display("이동불가")
+    else 도, 개, 걸, 윷, 모의 경우
+    	PieceMoveController -> Piece : setOnBoard(true)
+        PieceMoveController -> Piece : moveTo(nextPosition)
+        Piece -> FXGameView : displayPosition()
+    end alt
 
 else if piece is on board
-    alt steps == -1
-        PieceMoveController -> Piece : getHistory()
-        alt history is not empty
-            PieceMoveController -> Piece : moveTo(cell from history.pop())
-            PieceMoveController -> PieceMoveController : checkFinishCondition(piece)
+    alt 빽도의 경우
+            PieceMoveController -> Piece : moveTo(nextPosition)
             alt piece is not finished
-                PieceMoveController -> PieceMoveController : handleCapture(piece)
-                PieceMoveController -> PieceMoveController : handleGrouping(piece)
+                ref over GameController, PieceMoveController
+                	UC6 : Capture and Grouping
+                end ref
+            else piece at start
+            	PieceMoveController -> Piece : setPieceFinished()
             end
-            PieceMoveController -> Piece : getPosition()
-            alt position.getId() == 0
-                PieceMoveController -> Piece : setPassedStartOnce(true)
-            end
-        else
-            PieceMoveController -> Piece : getPosition()
-            PieceMoveController -> Piece : hasPassedStartOnce()
-            alt at start && passed once
-                PieceMoveController -> PieceMoveController : finishPiece(piece)
-            end
-        end
-    else
-        PieceMoveController -> Piece : getPosition()
-        PieceMoveController -> SquareBoard : getDestinationCell(current, steps, board, piece)
-        SquareBoard --> PieceMoveController : Cell
-        PieceMoveController -> Piece : moveTo(next)
-        PieceMoveController -> PieceMoveController : checkFinishCondition(piece)
+    else 도, 개, 걸, 윷, 모의 경우
+        PieceMoveController -> Piece : moveTo(nextPosition)
+        Piece -> FXGameView : displayPosition()
         alt piece is not finished
-            PieceMoveController -> PieceMoveController : handleCapture(piece)
-            PieceMoveController -> PieceMoveController : handleGrouping(piece)
+            ref over GameController, PieceMoveController
+            	UC6 : Capture and Grouping
+            end ref
         end
     end
 end
