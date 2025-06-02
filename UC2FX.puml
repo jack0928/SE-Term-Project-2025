@@ -4,17 +4,13 @@ title UC2: Throw Yut (JavaFX version)
 actor Player
 participant GameController as GameController
 participant FXGameView as FXGameView
-participant Yut as Yut
 participant YutController as YutController
 participant List as stepQueue
 
 Player -> FXGameView : press "Throw Yut" button
-FXGameView -> GameController : handleYutThrow(isRandom=true)
 
-GameController -> FXGameView : throwYut(isRandom)
 FXGameView -> YutController : throwYut(isRandom)
-YutController -> Yut : throw() → int
-Yut -> YutController : return result
+
 YutController -> FXGameView : return result
 FXGameView -> GameController : return result
 

@@ -2,45 +2,32 @@
 title UC1: Game Initialization Sequence Diagram (JavaFX & Swing)
 
 actor User
-participant Board as Board
 participant FXGameView as FXGameView
-participant Game as Game
 participant GameController as GameController
 participant GameView as GameView
-participant Player as Player
-participant SwingUtilities as SwingUtilities
 participant YutnoriApplication as YutnoriApplication
 participant YutnoriFXApplication as YutnoriFXApplication
 
-User -> YutnoriApplication : main()
-YutnoriApplication -> User : display UI selection prompt
-User -> YutnoriApplication : select UI type
+User -> YutnoriApplication : startProgram()
+YutnoriApplication -> User : requestUIType()
+User -> YutnoriApplication : inputUIType()
 
 alt if JavaFX selected
-  YutnoriApplication -> YutnoriFXApplication : Application.launch()
-  YutnoriFXApplication -> FXGameView : new FXGameView(Stage)
-  FXGameView -> GameController : new GameController(view)
+  YutnoriApplication -> YutnoriFXApplication : launchJavaFX()
 
-  GameController -> FXGameView : getBoard()
-  GameController -> FXGameView : getPlayers()
-  GameController -> Player : getPieces().size()
-  GameController -> Game : new Game(players, board, pieceCount)
-  GameController -> FXGameView : setThrowRandomButtonListener(...)
-  GameController -> FXGameView : setSelectButtonListener(...)
+  FXGameView -> User : requestInfoForGame()
+  User ->  FXGameView : UserInput()
+  GameController -> FXGameView : getInfo()
+  GameController -> FXGameView : requestRender()
+  GameController -> FXGameView : connectButton()
+
 
 else if Swing selected
-  YutnoriApplication -> SwingUtilities : invokeLater(...)
-  activate SwingUtilities
-  SwingUtilities -> GameView : new GameView()
-  GameView -> GameController : new GameController(view)
-  deactivate SwingUtilities
-
-  GameController -> GameView : getBoard()
-  GameController -> GameView : getPlayers()
-  GameController -> Player : getPieces().size()
-  GameController -> Game : new Game(players, board, pieceCount)
-  GameController -> GameView : setThrowRandomButtonListener(...)
-  GameController -> GameView : setSelectButtonListener(...)
+  GameView -> User : requestInfoForGame()
+  User -> GameView : UserInput()
+  GameController -> GameView : getInfo()
+  GameController -> GameView : requestRender()
+  GameController -> GameView : connectButton()
 end alt
 
 @enduml
