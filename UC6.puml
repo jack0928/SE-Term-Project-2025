@@ -7,8 +7,9 @@ participant ":Piece" as Piece
 participant "EnemyPiece : Piece" as EnemyPiece
 participant ":Cell" as Cell
 
+
 	GameController -> PieceMoveController: givePiecesInfo()
-	PieceMoveController -> Cell : findPiece()
+	PieceMoveController <- Cell : getPosition()
 
 	loop while EnemyPiece is exist
 		PieceMoveController -> EnemyPiece : reset()
