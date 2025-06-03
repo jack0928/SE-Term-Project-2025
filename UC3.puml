@@ -4,10 +4,6 @@ title UC3: Move Piece
 actor Player
 participant ":GameViewInterface" as GameViewInterface
 participant ":GameController" as GameController
-participant ":Board" as Board
-participant ":Piece" as Piece
-
-' Board 와 piece는 사용되지 않으므로 재검토 필요.
 
 loop while avaiableMove is not empty
 GameViewInterface -> Player : displayAvailableMove()
