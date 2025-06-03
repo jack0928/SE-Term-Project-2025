@@ -2,11 +2,13 @@
 title UC4: Apply SquareBoard Movement Rule
 
 
-participant GameController
-participant PieceMoveController
-participant FXGameView
-participant Piece
-participant SquareBoard
+participant ":GameController" as GameController
+participant ":PieceMoveController" as PieceMoveController
+participant ":GameViewInterface" as GameViewInterface
+participant ":Piece" as Piece
+participant ":SquareBoard" as SquareBoard
+
+' SquareBoard라고 해서 딱히 쓰이지 않음. Centre node가 복수적으로 사용되는 경우가 있으므로 그걸 고려하는게 좋을 수도 있음.
 
 GameController -> PieceMoveController : setMovementInfo()
 
@@ -14,12 +16,12 @@ GameController -> PieceMoveController : setMovementInfo()
 alt piece is not on board and steps > 0
 	alt 빽도의 경우
     	PieceMoveController -> GameController : unableToMove()
-    	GameController -> FXGameView : display("이동불가")
+    	GameController -> GameViewInterface : display("이동불가")
     else 도, 개, 걸, 윷, 모의 경우
     	PieceMoveController -> Piece : setOnBoard(true)
         PieceMoveController -> Piece : moveTo(sideLinePosition)
         PieceMoveController -> Piece : finishCheck()
-        Piece -> FXGameView : displayPosition()
+        Piece -> GameViewInterface : displayPosition()
     end alt
 
 else if piece is on board
@@ -44,7 +46,7 @@ else if piece is on board
        		PieceMoveController -> Piece : moveTo(도착지점으로 방향 변경)
        		PieceMoveController -> Piece : finishCheck()
         end alt
-        Piece -> FXGameView : displayPosition()
+        Piece -> GameViewInterface : displayPosition()
         alt piece is not finished
             ref over GameController, PieceMoveController
             	UC6 : Capture and Grouping

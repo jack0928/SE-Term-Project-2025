@@ -1,15 +1,16 @@
 @startuml
-title UC3: Move Piece (JavaFX Version)
+title UC3: Move Piece
 
 actor Player
-participant FXGameView as FXGameView
-participant GameController as GameController
-participant Board as Board
-participant Piece as Piece
-participant Game as Game
+participant ":GameViewInterface" as GameViewInterface
+participant ":GameController" as GameController
+participant ":Board" as Board
+participant ":Piece" as Piece
+
+' Board 와 piece는 사용되지 않으므로 재검토 필요.
 
 loop while avaiableMove is not empty
-FXGameView -> Player : displayAvailableMove()
+GameViewInterface -> Player : displayAvailableMove()
 Player-> GameController : giveMovePieceInfo()
 alt squareBoard
 	ref over GameController
@@ -20,7 +21,7 @@ else pentaBoard or hexaBoard
 		UC4 : PentaBoard/HexaBoard Movement Rule
 	end ref
 end alt
-GameController -> FXGameView : updateDisplay()
+GameController -> GameViewInterface : updateDisplay()
 end loop
 
 ref over GameController

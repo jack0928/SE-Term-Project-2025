@@ -1,11 +1,11 @@
 @startuml
 title UC6: Apply Special Rules - Capture and Grouping
 
-participant GameController
-participant PieceMoveController
-participant Piece
-participant EnemyPiece
-participant Cell
+participant ":GameController" as GameController
+participant ":PieceMoveController" as PieceMoveController
+participant ":Piece" as Piece
+participant "EnemyPiece : Piece" as EnemyPiece
+participant ":Cell" as Cell
 
 	GameController -> PieceMoveController: givePiecesInfo()
 	PieceMoveController -> Cell : findPiece()

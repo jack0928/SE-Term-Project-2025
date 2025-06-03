@@ -2,9 +2,9 @@
 title UC7: Switch Turn
 
 
-participant GameController
-participant Game
-participant GameViewInterface as View
+participant ":GameController" as GameController
+participant "Game" as Game
+participant ":GameViewInterface" as View
 
 
 GameController -> Game : checkTurnFinish()

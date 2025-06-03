@@ -3,7 +3,7 @@
 title: UC9: Restart or Exit Game
 
 actor Player
-participant GameSystem
+participant ":GameSystem" as GameSystem
 
 GameSystem -> Player : displayVictory()
 GameSystem -> Player : selectRestartOrExit()
