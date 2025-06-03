@@ -6,7 +6,7 @@ participant ":GameController" as GameController
 participant ":PieceMoveController" as PieceMoveController
 participant ":GameViewInterface" as GameViewInterface
 participant ":Piece" as Piece
-participant Board as Board
+participant “:Board” as Board
 
 ' 여기도 마찬가지, Board가 딱히 쓰이지 않음. 이것도 재검토 필요.
 

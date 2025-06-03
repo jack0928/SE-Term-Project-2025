@@ -6,6 +6,7 @@ participant ":PieceMoveController" as PieceMoveController
 participant ":Piece" as Piece
 participant "EnemyPiece : Piece" as EnemyPiece
 participant ":Cell" as Cell
+participant ":Player" as Player
 
 
 	GameController -> PieceMoveController: givePiecesInfo()
