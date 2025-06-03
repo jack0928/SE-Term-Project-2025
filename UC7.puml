@@ -13,7 +13,9 @@ alt if TurnFinish is true
 	GameController -> Game : setNextPlayer()
 	GameController -> View : updateDisplay()
 end
-
+ref over GameController
+    UC2: Throw Yut
+end ref
 
 
 @enduml
