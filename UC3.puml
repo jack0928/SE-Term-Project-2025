@@ -12,15 +12,11 @@ participant ":Piece" as Piece
 loop while avaiableMove is not empty
 GameViewInterface -> Player : displayAvailableMove()
 Player-> GameController : giveMovePieceInfo()
-alt squareBoard
-	ref over GameController
-		UC4 : squareMovementRule
-	end ref
-else pentaBoard or hexaBoard
-	ref over GameController
-		UC4 : PentaBoard/HexaBoard Movement Rule
-	end ref
-end alt
+
+ref over GameController
+	UC4,5: Apply Board Movement Rule
+end ref
+
 GameController -> GameViewInterface : updateDisplay()
 end loop
 
