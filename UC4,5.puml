@@ -1,5 +1,5 @@
 @startuml
-title UC5: Apply PentagonBoard / HexagonBoard Movement Rule
+title UC4,5: Apply Board Movement Rule
 
 
 participant ":GameController" as GameController
@@ -18,15 +18,17 @@ alt piece is not on board and steps > 0
     	PieceMoveController -> GameController : unableToMove()
     	GameController -> GameViewInterface : display("이동불가")
     else 도, 개, 걸, 윷, 모의 경우
-    	PieceMoveController -> Piece : setOnBoard(true)
-        PieceMoveController -> Piece : moveTo(sideLinePosition)
+    	PieceMoveController -> Piece : setOnBoard
+    	Board -> PieceMoveController : getDestinationCell()
+        PieceMoveController -> Piece : moveTo(Destination))
         PieceMoveController -> Piece : finishCheck()
         Piece -> GameViewInterface : displayPosition()
     end alt
 
 else if piece is on board
     alt 빽도의 경우
-            PieceMoveController -> Piece : moveTo(nextPosition)
+        	Board -> PieceMoveController : getDestinationCell()
+            PieceMoveController -> Piece : moveTo(Destination)
             PieceMoveController -> Piece : finishCheck()
             alt piece is not finished
                 ref over GameController, PieceMoveController
@@ -35,14 +37,17 @@ else if piece is on board
             end
     else 도, 개, 걸, 윷, 모의 경우
     	alt 외곽 순환
-        	PieceMoveController -> Piece : moveTo(sideLinePosition)
+    	    Board -> PieceMoveController : getDestinationCell()
+        	PieceMoveController -> Piece : moveTo(Destination))
         	PieceMoveController -> Piece : finishCheck()
         else 꼭짓점 도착
         	alt 마지막 꼭짓점과 마지막에서 2번째 꼭짓점이 아닐때
+        	    Board -> PieceMoveController : getDestinationCell()
         		PieceMoveController -> Piece : moveTo(종료지점과 두번째로 가까운 꼭짓점 방향으로 변경)
         		PieceMoveController -> Piece : finishCheck()
         	end alt
        	else 중심점 도착
+           	Board -> PieceMoveController : getDestinationCell()
        		PieceMoveController -> Piece : moveTo(도착지점으로 방향 변경)
        		PieceMoveController -> Piece : finishCheck()
         end alt
