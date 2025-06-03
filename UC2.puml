@@ -7,6 +7,8 @@ participant ":GameViewInterface" as GameViewInterface
 participant ":YutController" as YutController
 participant List as stepQueue
 
+
+
 Player -> GameViewInterface : press "Throw Yut" button
 
 GameViewInterface -> YutController : throwYut(isRandom)
@@ -28,5 +30,7 @@ end
 ref over GameController,GameViewInterface
 	UC3: movePiece
 end ref
-
+ref over GameController
+    UC7: Switch Turn
+end ref
 @enduml
