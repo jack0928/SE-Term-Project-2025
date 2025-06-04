@@ -1,10 +1,10 @@
 @startuml
-title UC1: Game Initialization Sequence Diagram (JavaFX & Swing)
+title UC1: Game Initialization Sequence Diagram
 
 actor User
-participant ":GameViewInterface" as GameViewInterface
-participant ":GameController" as GameController
 participant ":GameView" as GameView
+participant ":FXGameView" as FXGameView
+participant ":GameController" as GameController
 participant ":YutnoriApplication" as YutnoriApplication
 participant ":YutnoriFXApplication" as YutnoriFXApplication
 
@@ -14,15 +14,18 @@ User -> YutnoriApplication : inputUIType()
 
 alt if JavaFX selected
   YutnoriApplication -> YutnoriFXApplication : launchJavaFX()
-
-  GameViewInterface -> User : requestInfoForGame()
-  User ->  GameViewInterface : UserInput()
-  GameController -> GameViewInterface : getInfo()
-  GameController -> GameViewInterface : requestRender()
-  GameController -> GameViewInterface : connectButton()
+  YutnoriFXApplication -> GameController : start()
+  YutnoriFXApplication -> FXGameView : new FXGameView()
+  FXGameView -> User : requestInfoForGame()
+  User ->  FXGameView : UserInput()
+  GameController -> FXGameView : getInfo()
+  GameController -> FXGameView : requestRender()
+  GameController -> FXGameView : connectButton()
 
 
 else if Swing selected
+  YutnoriApplication -> GameController : start()
+  YutnoriApplication -> GameView : new GameView()
   GameView -> User : requestInfoForGame()
   User -> GameView : UserInput()
   GameController -> GameView : getInfo()
