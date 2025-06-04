@@ -30,8 +30,12 @@ public class YutnoriApplication {
 
         }
 
-        else { // JavaFX 실행
+        else if (selected == 1) { // JavaFX 실행
             Application.launch(YutnoriFXApplication.class);
+        }
+
+        else {
+            System.exit(0); // 사용자가 선택하지 않은 경우 프로그램 종료
         }
     }
 }
